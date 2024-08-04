@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item List App</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="container mx-auto mt-8">
+        <h1 class="text-2xl font-bold text-center mb-4">Item List</h1>
+        <form id="item-form" class="mb-8 max-w-md mx-auto p-4 bg-white shadow-md rounded">
+            <input type="text" id="item-name" class="w-full p-2 mb-2 border border-gray-300 rounded" placeholder="Name" required>
+            <input type="number" id="item-weight" class="w-full p-2 mb-2 border border-gray-300 rounded" placeholder="Weight(kg)" required>
+            <input type="number" id="item-minValue" class="w-full p-2 mb-2 border border-gray-300 rounded" placeholder="Min-Weight (kg)" required>
+            
+            <p id="error-message" class="text-red-500 text-sm mb-2"></p>
+            <button id="button" type="submit" class="w-full p-2 bg-blue-500 text-white rounded">Add Item</button>
+        </form>
+        <ul id="item-list" class="list-disc list-inside mx-auto max-w-md"></ul>
+    </div>
+    <script src="dist/app.js"></script>
+</body>
+</html>
