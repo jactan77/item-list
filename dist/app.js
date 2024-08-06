@@ -13,16 +13,29 @@ document.addEventListener("DOMContentLoaded", () => {
             errorMessage.textContent = 'Invalid input. Please enter a positive number for weight and minimum value.';
             return;
         }
+        else if (item.weight < item.minValue || item.minValue > item.midValue || item.midValue > item.weight) {
+            errorMessage.textContent = 'Invalid input. Please enter a positive number for weight, minimum value.';
+            return;
+        }
         item.addItem();
-        /*
-                if(isNaN(Weight) || isNaN(MinWeight) || Weight <= 0 || MinWeight <= 0){
-                errorMessage.textContent = 'Invalid input. Please enter a positive number for weight and minimum value.';
-                return;
-            } */
+        document.querySelectorAll('li').forEach(element => {
+            element.addEventListener('click', () => {
+                item.weight = prompt("Enter a new value for weight");
+                if (item.weight < 0 || item.weight == "") {
+                    errorMessage.textContent = 'Invalid input. Please enter a positive number for weight.';
+                    return;
+                }
+                item.weight = parseFloat(item.weight);
+                element.textContent = `${item.name} - Weight: ${item.weight} kg`;
+                
+            });
+        });
+        errorMessage.textContent = "";
         itemName.value = '';
         itemWeight.value = '';
         itemMinWeight.value = '';
         itemMiddWeight.value = '';
+        return item.minValue, item.midValue;
     });
     const Parameters = function (name, weight, minValue, midValue) {
         this.name = name;
@@ -30,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         this.minValue = minValue;
         this.midValue = midValue;
         this.addItem = () => {
-            itemList.innerHTML += `<li class='mb-8 max-w-md mx-auto p-4 bg-white rounded shadow-md border border-gray-300 transform transition-transform duration-200 hover:scale-105'>${this.name} - Weight: ${this.weight} kg, Min Value: ${this.minValue} kg, Middle Value:${this.midValue}</li>`;
+            itemList.innerHTML += `<li class='mb-8 max-w-md mx-auto p-4 bg-green-400 rounded shadow-md border border-gray-300 transform transition-transform duration-200 hover:scale-105'>${this.name} - Weight: ${this.weight} kg</li>`;
         };
     };
 });
