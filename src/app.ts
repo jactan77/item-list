@@ -58,11 +58,9 @@ const Parameters = function (name:string, weight:number, minValue:number, midVal
     this.weight = weight;
     this.minValue = minValue;
     this.midValue = midValue;
-    this.addItem = function(itemList) {
-        const listItem = document.createElement('li');
-        listItem.classList.add('mb-8', 'max-w-md', 'mx-auto', 'p-4', 'bg-green-400', 'rounded', 'shadow-md', 'border', 'border-gray-300', 'transform', 'transition-transform', 'duration-200', 'hover:scale-105');
-        listItem.textContent = `${this.name} - Weight: ${this.weight} kg`;
-        itemList.appendChild(listItem);
+    this.addItem = () => {
+        itemList.innerHTML += `<li class='mb-8 max-w-md mx-auto p-4 bg-green-400 rounded shadow-md border border-gray-300 transform transition-transform duration-200 hover:scale-105'>${this.name} - Weight: ${this.weight} kg</li>`;
+        
     }
     
 }
