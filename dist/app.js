@@ -25,6 +25,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 obj.weight = parseFloat(newWeight);
                 localStorage.setItem(itemId, JSON.stringify(obj));
                 listItem.textContent = `${obj.name} - Weight: ${obj.weight} kg, Min: ${obj.minValue}, Mid: ${obj.midValue}`;
+                if (obj.weight > obj.midValue) {
+                    listItem.classList.remove('bg-yellow-300');
+                    listItem.classList.add('bg-green-400');
+                }
+                else if (obj.weight > obj.minValue && obj.weight <= obj.midValue) {
+                    listItem.classList.remove('bg-green-400');
+                    listItem.classList.add('bg-yellow-300');
+                }
+                else {
+                    listItem.classList.remove('bg-yellow-300', 'bg-green-400');
+                    listItem.classList.add('bg-red-400');
+                }
             });
         };
     };
