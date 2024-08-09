@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             
             listItem.addEventListener('click', () => {
+                errorMessage.textContent = ""
                 const itemId = listItem.getAttribute('data-id');
                 let text = localStorage.getItem(itemId);
                 let obj = JSON.parse(text);
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     errorMessage.textContent = 'Invalid input. Please enter a positive number for weight.';
                     return;
                 }
+                
 
                 obj.weight = parseFloat(newWeight);
                 localStorage.setItem(itemId, JSON.stringify(obj));
