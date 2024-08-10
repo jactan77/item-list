@@ -15,19 +15,22 @@ document.addEventListener("DOMContentLoaded", () => {
             listItem.className = 'mb-8 max-w-md mx-auto p-4 bg-green-400 rounded shadow-md border border-gray-300 transform transition-transform duration-200 hover:scale-105';
             
             const contentWrapper = document.createElement('div');
-            const itemText = document.createElement('span');
+         // contentWrapper.className ='flex items-center justify-between'
+            const itemText = document.createElement('span')
+            itemText.className = 'mr-4'
+            
             itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
             contentWrapper.appendChild(itemText);
             
-            const buttonPlus = document.createElement('button');
-            buttonPlus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l'
-            buttonPlus.textContent = '+';
-            contentWrapper.appendChild(buttonPlus);
-            
             const buttonMinus = document.createElement('button');
-            buttonMinus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r'
+            buttonMinus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l'
             buttonMinus.textContent = '-';
             contentWrapper.appendChild(buttonMinus);
+            
+            const buttonPlus = document.createElement('button');
+            buttonPlus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r'
+            buttonPlus.textContent = '+';
+            contentWrapper.appendChild(buttonPlus);
             
             listItem.appendChild(contentWrapper);
             listItem.setAttribute('data-id', Date.now().toString());
