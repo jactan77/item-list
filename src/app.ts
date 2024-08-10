@@ -12,12 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         this.addItem = () => {
             const listItem = document.createElement('li');
-            listItem.className = 'mb-8 max-w-md mx-auto p-4 bg-green-400 rounded shadow-md border border-gray-300 transform transition-transform duration-200 hover:scale-105';
+            listItem.className = 'mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform transition-transform duration-200 hover:scale-105';
             
             const contentWrapper = document.createElement('div');
-         // contentWrapper.className ='flex items-center justify-between'
             const itemText = document.createElement('span')
             itemText.className = 'mr-4'
+            
             
             itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
             contentWrapper.appendChild(itemText);
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
             listItem.appendChild(contentWrapper);
             listItem.setAttribute('data-id', Date.now().toString());
             itemList.appendChild(listItem);
-            ;
+            
             
 
             buttonPlus.addEventListener('click', ()=>{
