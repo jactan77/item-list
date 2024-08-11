@@ -109,7 +109,7 @@ itemForm.addEventListener('submit', (e)=> {
     if (isNaN(item.weight) || isNaN(item.minValue) || isNaN(item.midValue) || item.weight < 0 || item.minValue < 0 || item.midValue < 0) {
         errorMessage.textContent = 'Invalid input. Please enter a positive number for weight and minimum value.';
         return;
-    } else if(item.weight < item.minValue || item.minValue > item.midValue || item.midValue > item.weight) {
+    } else if(item.weight <= item.minValue || item.minValue >= item.midValue || item.midValue >= item.weight) {
         errorMessage.textContent = 'Invalid input. Please enter a positive number for weight, minimum value.'
         return;
     } 

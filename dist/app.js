@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
             errorMessage.textContent = 'Invalid input. Please enter a positive number for weight and minimum value.';
             return;
         }
-        else if (item.weight < item.minValue || item.minValue > item.midValue || item.midValue > item.weight) {
+        else if (item.weight <= item.minValue || item.minValue >= item.midValue || item.midValue >= item.weight) {
             errorMessage.textContent = 'Invalid input. Please enter a positive number for weight, minimum value.';
             return;
         }
