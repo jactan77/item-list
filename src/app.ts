@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         this.addItem = () => {
             const listItem = document.createElement('li');
-            listItem.className = 'mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform transition-transform duration-200 hover:scale-105';
+            listItem.className = 'relative mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform';
             
             const contentWrapper = document.createElement('div');
             const itemText = document.createElement('span')
@@ -31,6 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
             buttonPlus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r'
             buttonPlus.textContent = '+';
             contentWrapper.appendChild(buttonPlus);
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded'
+            deleteButton.textContent = 'Delete';
+            contentWrapper.appendChild(deleteButton);
             
             listItem.appendChild(contentWrapper);
             listItem.setAttribute('data-id', Date.now().toString());
@@ -80,7 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
 )
-        
+        deleteButton.addEventListener('click',() => {
+            const itemId  = listItem.getAttribute('data-item')
+            localStorage.removeItem(itemId);
+            listItem.remove();
+        })
         
         
         }
