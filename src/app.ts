@@ -34,7 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const deleteButton = document.createElement('button');
             deleteButton.className = 'absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded'
-            deleteButton.textContent = 'Delete';
+            const icon = document.createElement('box-icon')
+            icon.setAttribute('name','trash')
+            deleteButton.appendChild(icon);
             contentWrapper.appendChild(deleteButton);
             
             listItem.appendChild(contentWrapper);
