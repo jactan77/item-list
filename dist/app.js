@@ -2,14 +2,47 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemForm = document.getElementById('item-form');
     const itemList = document.getElementById('item-list');
     const errorMessage = document.getElementById('error-message');
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+    function getCookie(name) {
+        let nameEQ = name + "=";
+        let ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ')
+                c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0)
+                return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+    function eraseCookie(name) {
+        document.cookie = name + '=; Max-Age=-99999999; path=/';
+    }
+    function getAllCookies() {
+        const cookies = document.cookie.split("; ");
+        const cookieObj = {};
+        cookies.forEach(cookie => {
+            const [name, value] = cookie.split("=");
+            cookieObj[name] = decodeURIComponent(value);
+        });
+        return cookieObj;
+    }
     const Parameters = function (name, weight, minValue, midValue) {
         this.name = name;
         this.weight = weight;
         this.minValue = minValue;
         this.midValue = midValue;
-        this.addItem = () => {
+        this.addItem = (id = null) => {
             const listItem = document.createElement('li');
-            listItem.className = 'relative mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform';
+            listItem.className = 'relative mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300';
             const contentWrapper = document.createElement('div');
             const itemText = document.createElement('span');
             itemText.className = 'mr-4';
@@ -30,14 +63,18 @@ document.addEventListener("DOMContentLoaded", () => {
             deleteButton.appendChild(icon);
             contentWrapper.appendChild(deleteButton);
             listItem.appendChild(contentWrapper);
-            listItem.setAttribute('data-id', Date.now().toString());
+            const itemId = id || Date.now().toString();
+            listItem.setAttribute('data-id', itemId);
             itemList.appendChild(listItem);
+            if (!id) {
+                setCookie(itemId, JSON.stringify(this), 7);
+            }
             buttonPlus.addEventListener('click', () => {
                 const itemId = listItem.getAttribute('data-id');
-                let text = localStorage.getItem(itemId);
+                let text = getCookie(itemId);
                 let obj = JSON.parse(text);
                 obj.weight += 1;
-                localStorage.setItem(itemId, JSON.stringify(obj));
+                setCookie(itemId, JSON.stringify(obj), 7);
                 itemText.textContent = `${obj.name} - Weight: ${obj.weight} kg`;
                 if (obj.weight > obj.midValue) {
                     listItem.classList.remove('bg-yellow-300');
@@ -54,10 +91,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             buttonMinus.addEventListener('click', () => {
                 const itemId = listItem.getAttribute('data-id');
-                let text = localStorage.getItem(itemId);
+                let text = getCookie(itemId);
                 let obj = JSON.parse(text);
                 obj.weight -= 1;
-                localStorage.setItem(itemId, JSON.stringify(obj));
+                setCookie(itemId, JSON.stringify(obj), 7);
                 itemText.textContent = `${obj.name} - Weight: ${obj.weight} kg`;
                 if (obj.weight > obj.midValue) {
                     listItem.classList.remove('bg-yellow-300');
@@ -73,12 +110,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
             deleteButton.addEventListener('click', () => {
-                const itemId = listItem.getAttribute('data-item');
-                localStorage.removeItem(itemId);
-                listItem.remove();
+                const itemId = listItem.getAttribute('data-id');
+                eraseCookie(itemId);
+                itemList.removeChild(listItem);
             });
         };
     };
+    const cookies = getAllCookies();
+    for (const itemId in cookies) {
+        if (cookies.hasOwnProperty(itemId)) {
+            const itemData = JSON.parse(cookies[itemId]);
+            const item = new Parameters(itemData.name, itemData.weight, itemData.minValue, itemData.midValue);
+            item.addItem(itemId);
+        }
+    }
     itemForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const itemName = document.querySelector('#item-name');
@@ -95,13 +140,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         item.addItem();
-        const itemId = Date.now().toString();
-        localStorage.setItem(itemId, JSON.stringify(item));
         errorMessage.textContent = "";
         itemName.value = '';
         itemWeight.value = '';
         itemMinWeight.value = '';
         itemMiddWeight.value = '';
-        return item.minValue, item.midValue;
     });
 });
