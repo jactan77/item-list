@@ -51,8 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         deleteButton.addEventListener('click', () => {
-            localStorage.removeItem(id);
-            listItem.remove();
+            removeItem(id, listItem);
         });
 
         updateBackgroundColor(listItem, weight, minValue, midValue);
@@ -75,6 +74,12 @@ document.addEventListener("DOMContentLoaded", () => {
             listItem.classList.remove('bg-yellow-300', 'bg-green-400');
             listItem.classList.add('bg-red-400');
         }
+    }
+
+    // Function to remove an item from localStorage and the DOM
+    function removeItem(id: string, listItem: HTMLLIElement) {
+        localStorage.removeItem(id);
+        listItem.remove();
     }
 
     // Function to load items from localStorage
