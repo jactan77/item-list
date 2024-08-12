@@ -2,12 +2,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemForm = document.getElementById('item-form');
     const itemList = document.getElementById('item-list');
     const errorMessage = document.getElementById('error-message');
-    const Parameters = function (name, weight, minValue, midValue) {
-        this.name = name;
-        this.weight = weight;
-        this.minValue = minValue;
-        this.midValue = midValue;
-        this.addItem = () => {
+    class Parameters {
+        constructor(name, weight, minValue, midValue, id) {
+            this.name = name;
+            this.weight = weight;
+            this.minValue = minValue;
+            this.midValue = midValue;
+            this.id = id;
+        }
+        addItem() {
             const listItem = document.createElement('li');
             listItem.className = 'relative mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform';
             const contentWrapper = document.createElement('div');
@@ -30,78 +33,83 @@ document.addEventListener("DOMContentLoaded", () => {
             deleteButton.appendChild(icon);
             contentWrapper.appendChild(deleteButton);
             listItem.appendChild(contentWrapper);
-            listItem.setAttribute('data-id', Date.now().toString());
+            listItem.setAttribute('data-id', this.id);
             itemList.appendChild(listItem);
             buttonPlus.addEventListener('click', () => {
-                const itemId = listItem.getAttribute('data-id');
-                let text = localStorage.getItem(itemId);
-                let obj = JSON.parse(text);
-                obj.weight += 1;
-                localStorage.setItem(itemId, JSON.stringify(obj));
-                itemText.textContent = `${obj.name} - Weight: ${obj.weight} kg`;
-                if (obj.weight > obj.midValue) {
-                    listItem.classList.remove('bg-yellow-300');
-                    listItem.classList.add('bg-green-400');
-                }
-                else if (obj.weight > obj.minValue && obj.weight <= obj.midValue) {
-                    listItem.classList.remove('bg-green-400');
-                    listItem.classList.add('bg-yellow-300');
-                }
-                else {
-                    listItem.classList.remove('bg-yellow-300', 'bg-green-400');
-                    listItem.classList.add('bg-red-400');
-                }
+                this.updateWeight(1);
+                itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
+                this.updateBackground(listItem);
             });
             buttonMinus.addEventListener('click', () => {
-                const itemId = listItem.getAttribute('data-id');
-                let text = localStorage.getItem(itemId);
-                let obj = JSON.parse(text);
-                obj.weight -= 1;
-                localStorage.setItem(itemId, JSON.stringify(obj));
-                itemText.textContent = `${obj.name} - Weight: ${obj.weight} kg`;
-                if (obj.weight > obj.midValue) {
-                    listItem.classList.remove('bg-yellow-300');
-                    listItem.classList.add('bg-green-400');
-                }
-                else if (obj.weight > obj.minValue && obj.weight <= obj.midValue) {
-                    listItem.classList.remove('bg-green-400');
-                    listItem.classList.add('bg-yellow-300');
-                }
-                else {
-                    listItem.classList.remove('bg-yellow-300', 'bg-green-400');
-                    listItem.classList.add('bg-red-400');
-                }
+                this.updateWeight(-1);
+                itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
+                this.updateBackground(listItem);
             });
             deleteButton.addEventListener('click', () => {
-                const itemId = listItem.getAttribute('data-item');
-                localStorage.removeItem(itemId);
-                listItem.remove();
+                this.removeItem(listItem);
             });
-        };
-    };
+            this.updateBackground(listItem);
+        }
+        updateWeight(change) {
+            this.weight += change;
+            localStorage.setItem(this.id, JSON.stringify(this));
+        }
+        updateBackground(listItem) {
+            if (this.weight > this.midValue) {
+                listItem.classList.remove('bg-yellow-300');
+                listItem.classList.add('bg-green-400');
+            }
+            else if (this.weight > this.minValue && this.weight <= this.midValue) {
+                listItem.classList.remove('bg-green-400');
+                listItem.classList.add('bg-yellow-300');
+            }
+            else {
+                listItem.classList.remove('bg-yellow-300', 'bg-green-400');
+                listItem.classList.add('bg-red-400');
+            }
+        }
+        removeItem(listItem) {
+            localStorage.removeItem(this.id);
+            listItem.remove();
+        }
+    }
+    function loadItems() {
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            const itemData = localStorage.getItem(key);
+            if (itemData) {
+                const { name, weight, minValue, midValue, id } = JSON.parse(itemData);
+                if (itemData && id) {
+                    console.log(`Loading item with id: ${id}`); // Debug log
+                    const item = new Parameters(name, weight, minValue, midValue, id);
+                    item.addItem();
+                }
+            }
+        });
+    }
     itemForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const itemName = document.querySelector('#item-name');
-        const itemWeight = document.querySelector('#item-weight');
-        const itemMinWeight = document.querySelector('#item-minValue');
-        const itemMiddWeight = document.querySelector('#item-midValue');
-        const item = new Parameters(itemName.value, parseFloat(itemWeight.value), parseFloat(itemMinWeight.value), parseFloat(itemMiddWeight.value));
-        if (isNaN(item.weight) || isNaN(item.minValue) || isNaN(item.midValue) || item.weight < 0 || item.minValue < 0 || item.midValue < 0) {
-            errorMessage.textContent = 'Invalid input. Please enter a positive number for weight and minimum value.';
+        const itemName = document.querySelector('#item-name').value;
+        const itemWeight = parseFloat(document.querySelector('#item-weight').value);
+        const itemMinWeight = parseFloat(document.querySelector('#item-minValue').value);
+        const itemMiddWeight = parseFloat(document.querySelector('#item-midValue').value);
+        if (isNaN(itemWeight) || isNaN(itemMinWeight) || isNaN(itemMiddWeight) || itemWeight < 0 || itemMinWeight < 0 || itemMiddWeight < 0) {
+            errorMessage.textContent = 'Invalid input. Please enter positive numbers for weight and values.';
             return;
         }
-        else if (item.weight <= item.minValue || item.minValue >= item.midValue || item.midValue >= item.weight) {
-            errorMessage.textContent = 'Invalid input. Please enter a positive number for weight, minimum value.';
+        else if (itemWeight < itemMinWeight || itemMinWeight > itemMiddWeight || itemMiddWeight > itemWeight) {
+            errorMessage.textContent = 'Invalid input. Please enter valid weight and values.';
             return;
         }
+        const id = Date.now().toString();
+        const item = new Parameters(itemName, itemWeight, itemMinWeight, itemMiddWeight, id);
         item.addItem();
-        const itemId = Date.now().toString();
-        localStorage.setItem(itemId, JSON.stringify(item));
+        localStorage.setItem(item.id, JSON.stringify(item));
         errorMessage.textContent = "";
-        itemName.value = '';
-        itemWeight.value = '';
-        itemMinWeight.value = '';
-        itemMiddWeight.value = '';
-        return item.minValue, item.midValue;
+        document.querySelector('#item-name').value = '';
+        document.querySelector('#item-weight').value = '';
+        document.querySelector('#item-minValue').value = '';
+        document.querySelector('#item-midValue').value = '';
     });
+    loadItems();
 });
