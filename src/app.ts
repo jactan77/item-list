@@ -3,142 +3,118 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemList = document.getElementById('item-list') as HTMLUListElement;
     const errorMessage = document.getElementById('error-message') as HTMLParagraphElement;
 
-
-    const Parameters = function (name: string, weight: number, minValue: number, midValue: number) {
-        this.name = name;
-        this.weight = weight;
-        this.minValue = minValue;
-        this.midValue = midValue;
-
-        this.addItem = () => {
-            const listItem = document.createElement('li');
-            listItem.className = 'relative mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform';
-            
-            const contentWrapper = document.createElement('div');
-            const itemText = document.createElement('span')
-            itemText.className = 'mr-4'
-            
-            
-            itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
-            contentWrapper.appendChild(itemText);
-            
-            const buttonMinus = document.createElement('button');
-            buttonMinus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l'
-            buttonMinus.textContent = '-';
-            contentWrapper.appendChild(buttonMinus);
-            
-            const buttonPlus = document.createElement('button');
-            buttonPlus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r'
-            buttonPlus.textContent = '+';
-            contentWrapper.appendChild(buttonPlus);
-            
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded'
-            const icon = document.createElement('box-icon')
-            icon.setAttribute('name','trash')
-            deleteButton.appendChild(icon);
-            contentWrapper.appendChild(deleteButton);
-            
-            listItem.appendChild(contentWrapper);
-            listItem.setAttribute('data-id', Date.now().toString());
-            itemList.appendChild(listItem);
-            
-            
-
-            buttonPlus.addEventListener('click', ()=>{
-                    const itemId = listItem.getAttribute('data-id')
-                    let text = localStorage.getItem(itemId);
-                    let obj = JSON.parse(text);
-                    obj.weight += 1;
-                    localStorage.setItem(itemId, JSON.stringify(obj));
-                    itemText.textContent = `${obj.name} - Weight: ${obj.weight} kg`
-                    
-                    if(obj.weight > obj.midValue) {
-                        listItem.classList.remove('bg-yellow-300');
-                        listItem.classList.add('bg-green-400');
-                    } else if(obj.weight > obj.minValue  && obj.weight <= obj.midValue){
-                        listItem.classList.remove('bg-green-400');
-                        listItem.classList.add('bg-yellow-300');
-                    } else {
-                        listItem.classList.remove('bg-yellow-300', 'bg-green-400');
-                        listItem.classList.add('bg-red-400');
-                    }
-            }
-            
-        )
-        buttonMinus.addEventListener('click', ()=>{
-            const itemId = listItem.getAttribute('data-id')
-            let text = localStorage.getItem(itemId);
-            let obj = JSON.parse(text);
-            obj.weight -= 1;
-            localStorage.setItem(itemId, JSON.stringify(obj));
-            itemText.textContent = `${obj.name} - Weight: ${obj.weight} kg`
-            
-            if(obj.weight > obj.midValue) {
-                listItem.classList.remove('bg-yellow-300');
-                listItem.classList.add('bg-green-400');
-            } else if(obj.weight > obj.minValue  && obj.weight <= obj.midValue){
-                listItem.classList.remove('bg-green-400');
-                listItem.classList.add('bg-yellow-300');
-            } else {
-                listItem.classList.remove('bg-yellow-300', 'bg-green-400');
-                listItem.classList.add('bg-red-400');
-            }
-    }
-    
-)
-        deleteButton.addEventListener('click',() => {
-            const itemId  = listItem.getAttribute('data-item')
-            localStorage.removeItem(itemId);
+    // Function to create a list item and append it to the list
+    function createListItem(name: string, weight: number, minValue: number, midValue: number, id: string) {
+        const listItem = document.createElement('li');
+        listItem.className = 'relative mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform';
+        
+        const contentWrapper = document.createElement('div');
+        const itemText = document.createElement('span');
+        itemText.className = 'mr-4';
+        itemText.textContent = `${name} - Weight: ${weight} kg`;
+        contentWrapper.appendChild(itemText);
+        
+        const buttonMinus = document.createElement('button');
+        buttonMinus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l';
+        buttonMinus.textContent = '-';
+        contentWrapper.appendChild(buttonMinus);
+        
+        const buttonPlus = document.createElement('button');
+        buttonPlus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r';
+        buttonPlus.textContent = '+';
+        contentWrapper.appendChild(buttonPlus);
+        
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded';
+        const icon = document.createElement('box-icon');
+        icon.setAttribute('name', 'trash');
+        deleteButton.appendChild(icon);
+        contentWrapper.appendChild(deleteButton);
+        
+        listItem.appendChild(contentWrapper);
+        listItem.setAttribute('data-id', id);
+        itemList.appendChild(listItem);
+        
+        // Add event listeners for the buttons
+        buttonPlus.addEventListener('click', () => {
+            weight += 1;
+            updateItem(id, name, weight, minValue, midValue);
+            itemText.textContent = `${name} - Weight: ${weight} kg`;
+            updateBackgroundColor(listItem, weight, minValue, midValue);
+        });
+        
+        buttonMinus.addEventListener('click', () => {
+            weight -= 1;
+            updateItem(id, name, weight, minValue, midValue);
+            itemText.textContent = `${name} - Weight: ${weight} kg`;
+            updateBackgroundColor(listItem, weight, minValue, midValue);
+        });
+        
+        deleteButton.addEventListener('click', () => {
+            localStorage.removeItem(id);
             listItem.remove();
-        })
-        
-        
+        });
+
+        updateBackgroundColor(listItem, weight, minValue, midValue);
+    }
+
+    // Function to update an item in localStorage
+    function updateItem(id: string, name: string, weight: number, minValue: number, midValue: number) {
+        localStorage.setItem(id, JSON.stringify({ name, weight, minValue, midValue, id }));
+    }
+
+    // Function to update the background color based on weight
+    function updateBackgroundColor(listItem: HTMLLIElement, weight: number, minValue: number, midValue: number) {
+        if (weight > midValue) {
+            listItem.classList.remove('bg-yellow-300');
+            listItem.classList.add('bg-green-400');
+        } else if (weight > minValue && weight <= midValue) {
+            listItem.classList.remove('bg-green-400');
+            listItem.classList.add('bg-yellow-300');
+        } else {
+            listItem.classList.remove('bg-yellow-300', 'bg-green-400');
+            listItem.classList.add('bg-red-400');
         }
     }
-        
-        
-itemForm.addEventListener('submit', (e)=> {
-    e.preventDefault();
-    const itemName:HTMLInputElement = document.querySelector('#item-name'); 
-    const itemWeight:HTMLInputElement = document.querySelector('#item-weight');
-    const itemMinWeight:HTMLInputElement = document.querySelector('#item-minValue');
-    const itemMiddWeight:HTMLInputElement = document.querySelector('#item-midValue')
-    
-    const item = new Parameters(itemName.value, parseFloat(itemWeight.value), parseFloat(itemMinWeight.value), parseFloat(itemMiddWeight.value));
-    if (isNaN(item.weight) || isNaN(item.minValue) || isNaN(item.midValue) || item.weight < 0 || item.minValue < 0 || item.midValue < 0) {
-        errorMessage.textContent = 'Invalid input. Please enter a positive number for weight and minimum value.';
-        return;
-    } else if(item.weight < item.minValue || item.minValue > item.midValue || item.midValue > item.weight) {
-        errorMessage.textContent = 'Invalid input. Please enter a positive number for weight, minimum value.'
-        return;
-    } 
-    item.addItem();
-    const itemId = Date.now().toString();
-    localStorage.setItem(itemId, JSON.stringify(item));
-    
-    
-   
-    errorMessage.textContent = ""
-    itemName.value = '';
-    itemWeight.value = '';
-    itemMinWeight.value = '';
-    itemMiddWeight.value = '';
-    return item.minValue , item.midValue
-    
 
+    // Function to load items from localStorage
+    function loadItems() {
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            const itemData = localStorage.getItem(key);
+            if (itemData) {
+                const { name, weight, minValue, midValue, id } = JSON.parse(itemData);
+                createListItem(name, weight, minValue, midValue, id);
+            }
+        });
+    }
 
-})
+    itemForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const itemName = (document.querySelector('#item-name') as HTMLInputElement).value;
+        const itemWeight = parseFloat((document.querySelector('#item-weight') as HTMLInputElement).value);
+        const itemMinWeight = parseFloat((document.querySelector('#item-minValue') as HTMLInputElement).value);
+        const itemMiddWeight = parseFloat((document.querySelector('#item-midValue') as HTMLInputElement).value);
 
+        if (isNaN(itemWeight) || isNaN(itemMinWeight) || isNaN(itemMiddWeight) || itemWeight < 0 || itemMinWeight < 0 || itemMiddWeight < 0) {
+            errorMessage.textContent = 'Invalid input. Please enter positive numbers for weight and values.';
+            return;
+        } else if (itemWeight < itemMinWeight || itemMinWeight > itemMiddWeight || itemMiddWeight > itemWeight) {
+            errorMessage.textContent = 'Invalid input. Please enter valid weight and values.';
+            return;
+        }
 
+        const id = Date.now().toString();
+        createListItem(itemName, itemWeight, itemMinWeight, itemMiddWeight, id);
+        updateItem(id, itemName, itemWeight, itemMinWeight, itemMiddWeight);
 
+        errorMessage.textContent = "";
+        (document.querySelector('#item-name') as HTMLInputElement).value = '';
+        (document.querySelector('#item-weight') as HTMLInputElement).value = '';
+        (document.querySelector('#item-minValue') as HTMLInputElement).value = '';
+        (document.querySelector('#item-midValue') as HTMLInputElement).value = '';
+    });
 
-
-
-
-
-
-
-
-
-})
+    // Load items when the page loads
+    loadItems();
+});
