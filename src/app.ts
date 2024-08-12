@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemList = document.getElementById('item-list') as HTMLUListElement;
     const errorMessage = document.getElementById('error-message') as HTMLParagraphElement;
 
-    // Function to create a list item and append it to the list
+    
     function createListItem(name: string, weight: number, minValue: number, midValue: number, id: string) {
         const listItem = document.createElement('li');
         listItem.className = 'relative mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform';
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         listItem.setAttribute('data-id', id);
         itemList.appendChild(listItem);
         
-        // Add event listeners for the buttons
+
         buttonPlus.addEventListener('click', () => {
             weight += 1;
             updateItem(id, name, weight, minValue, midValue);
@@ -51,18 +51,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         deleteButton.addEventListener('click', () => {
+            console.log(`Deleting item with id: ${id}`);  
             removeItem(id, listItem);
         });
 
         updateBackgroundColor(listItem, weight, minValue, midValue);
     }
 
-    // Function to update an item in localStorage
+    
     function updateItem(id: string, name: string, weight: number, minValue: number, midValue: number) {
         localStorage.setItem(id, JSON.stringify({ name, weight, minValue, midValue, id }));
     }
 
-    // Function to update the background color based on weight
+    
     function updateBackgroundColor(listItem: HTMLLIElement, weight: number, minValue: number, midValue: number) {
         if (weight > midValue) {
             listItem.classList.remove('bg-yellow-300');
@@ -76,20 +77,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Function to remove an item from localStorage and the DOM
     function removeItem(id: string, listItem: HTMLLIElement) {
         localStorage.removeItem(id);
         listItem.remove();
+        console.log(`Removed item with id: ${id}`);  // Debug log
     }
 
-    // Function to load items from localStorage
+    
     function loadItems() {
         const keys = Object.keys(localStorage);
         keys.forEach(key => {
             const itemData = localStorage.getItem(key);
             if (itemData) {
                 const { name, weight, minValue, midValue, id } = JSON.parse(itemData);
-                createListItem(name, weight, minValue, midValue, id);
+                if (itemData && id) {
+                    console.log(`Loading item with id: ${id}`);  // Debug log
+                    createListItem(name, weight, minValue, midValue, id);
+                }
             }
         });
     }
@@ -120,6 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
         (document.querySelector('#item-midValue') as HTMLInputElement).value = '';
     });
 
-    // Load items when the page loads
+    
     loadItems();
 });
