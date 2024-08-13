@@ -27,11 +27,21 @@ document.addEventListener("DOMContentLoaded", () => {
             buttonPlus.textContent = '+';
             contentWrapper.appendChild(buttonPlus);
             const deleteButton = document.createElement('button');
-            deleteButton.className = 'absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded';
+            deleteButton.className = ' bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 ml-24  rounded';
             const icon = document.createElement('box-icon');
             icon.setAttribute('name', 'trash');
             deleteButton.appendChild(icon);
             contentWrapper.appendChild(deleteButton);
+            const infoButton = document.createElement('button');
+            infoButton.className = "bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 h-full rounded-r-full shadow-lg absolute -right-12 top-0 bottom-0 flex items-center justify-center";
+            const icon2 = document.createElement('box-icon');
+            icon2.setAttribute('name', 'info-circle');
+            infoButton.appendChild(icon2);
+            contentWrapper.appendChild(infoButton);
+            const infoDiv = document.createElement('div');
+            infoDiv.className = "hidden mt-2 p-2 bg-gray-200 rounded";
+            infoDiv.textContent = `Min Value: ${this.minValue}, Mid Value: ${this.midValue}`;
+            listItem.appendChild(infoDiv);
             listItem.appendChild(contentWrapper);
             listItem.setAttribute('data-id', this.id);
             itemList.appendChild(listItem);
@@ -47,6 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             deleteButton.addEventListener('click', () => {
                 this.removeItem(listItem);
+            });
+            infoButton.addEventListener('click', () => {
+                infoDiv.classList.toggle('hidden');
             });
             this.updateBackground(listItem);
         }
