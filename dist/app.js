@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         addItem() {
             const listItem = document.createElement('li');
-            listItem.className = 'd-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-5 p-4 bg-success.bg-gradientrounded-lg shadow-lg border';
+            listItem.className = 'd-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-5 p-4 bg-success rounded-lg shadow-lg border';
             const contentWrapper = document.createElement('div');
             contentWrapper.className = 'd-flex flex-column flex-grow-1';
             const itemText = document.createElement('span');
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
             buttonGroup.appendChild(deleteButton);
             const infoButton = document.createElement('button');
             infoButton.className = 'btn btn-primary ms-2 ms-md-3 btn-sm d-flex align-items-center justify-content-center';
-            infoButton.style.width = '45px';
+            infoButton.style.width = '45px'; // Set width to match other buttons
             const icon2 = document.createElement('box-icon');
             icon2.setAttribute('name', 'info-circle');
             icon2.setAttribute('size', 'sm');
@@ -80,9 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem(this.id, JSON.stringify(this));
         }
         updateBackground(listItem) {
-            listItem.classList.remove('.bg-success.bg-gradient', 'bg-warning', 'bg-danger');
+            listItem.classList.remove('bg-success', 'bg-warning', 'bg-danger');
             if (this.weight > this.midValue) {
-                listItem.classList.add('.bg-success.bg-gradient');
+                listItem.classList.add('bg-success');
             }
             else if (this.weight > this.minValue && this.weight <= this.midValue) {
                 listItem.classList.add('bg-warning');
