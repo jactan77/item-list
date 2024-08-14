@@ -4,25 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item List App</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="app" class="container mx-auto mt-8">
-        <h1 class="text-2xl font-bold text-center mb-4">Item List</h1>
-        <form id="item-form" class="mb-8 max-w-md mx-auto p-4 bg-white shadow-md rounded">
-            <input type="text" id="item-name" class="w-full p-2 mb-2 border border-gray-300 rounded" placeholder="Name" required>
-            <input type="number" id="item-weight" class="w-full p-2 mb-2 border border-gray-300 rounded" placeholder="Weight(kg)" required>
-            <input type="number" id="item-minValue" class="w-full p-2 mb-2 border border-gray-300 rounded" placeholder="Min-Weight (kg)" required>
-            <input type="number" id="item-midValue" class="w-full p-2 mb-2 border border-gray-300 rounded" placeholder="Middle-Weight (kg)" required>
-            
-            <p id="error-message" class="text-red-500 text-sm mb-2"></p>
-            <button id="button" type="submit" class="w-full p-2 bg-blue-500 text-white rounded">Add Item</button>
+    <div id="app" class="container mt-4">
+        <h1 class="text-center mb-4">Item List</h1>
+        <form id="item-form" class="mb-4 p-4 bg-light shadow-sm rounded">
+            <div class="mb-3">
+                <input type="text" id="item-name" class="form-control" placeholder="Name" required>
+            </div>
+            <div class="mb-3">
+                <input type="number" id="item-weight" class="form-control" placeholder="Weight (kg)" required>
+            </div>
+            <div class="mb-3">
+                <input type="number" id="item-minValue" class="form-control" placeholder="Min-Weight (kg)" required>
+            </div>
+            <div class="mb-3">
+                <input type="number" id="item-midValue" class="form-control" placeholder="Middle-Weight (kg)" required>
+            </div>
+            <p id="error-message" class="text-danger"></p>
+            <button id="button" type="submit" class="btn btn-primary w-100">Add Item</button>
         </form>
-        <ul id="item-list" class="list-disc list-inside mx-auto max-w-md"></ul>
-        
-        
+        <ul id="item-list" class="list-unstyled"></ul>
     </div>
     <script src="dist/app.js"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>

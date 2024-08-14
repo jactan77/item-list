@@ -12,34 +12,46 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         addItem() {
             const listItem = document.createElement('li');
-            listItem.className = 'relative mb-8 max-w-md mx-auto p-4 bg-green-400 list-none rounded shadow-md border border-gray-300 transform';
+            listItem.className = 'd-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-5 p-4 bg-success.bg-gradientrounded-lg shadow-lg border';
             const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'd-flex flex-column flex-grow-1';
             const itemText = document.createElement('span');
-            itemText.className = 'mr-4';
+            itemText.className = 'mb-3 mb-md-0 text-truncate';
+            itemText.style.maxWidth = '100%';
             itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
             contentWrapper.appendChild(itemText);
+            const buttonGroup = document.createElement('div');
+            buttonGroup.className = 'd-flex mt-3 mt-md-0 ms-auto';
+            contentWrapper.appendChild(buttonGroup);
+            const buttonStyle = 'btn btn-secondary btn-sm';
+            const actionButtonStyle = 'btn btn-danger ms-2 ms-md-3 btn-sm d-flex align-items-center justify-content-center';
             const buttonMinus = document.createElement('button');
-            buttonMinus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l';
+            buttonMinus.className = buttonStyle;
+            buttonMinus.style.width = '45px';
             buttonMinus.textContent = '-';
-            contentWrapper.appendChild(buttonMinus);
+            buttonGroup.appendChild(buttonMinus);
             const buttonPlus = document.createElement('button');
-            buttonPlus.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r';
+            buttonPlus.className = buttonStyle;
+            buttonPlus.style.width = '45px';
             buttonPlus.textContent = '+';
-            contentWrapper.appendChild(buttonPlus);
+            buttonGroup.appendChild(buttonPlus);
             const deleteButton = document.createElement('button');
-            deleteButton.className = ' bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 ml-24  rounded';
+            deleteButton.className = actionButtonStyle;
             const icon = document.createElement('box-icon');
             icon.setAttribute('name', 'trash');
+            icon.setAttribute('size', 'sm');
             deleteButton.appendChild(icon);
-            contentWrapper.appendChild(deleteButton);
+            buttonGroup.appendChild(deleteButton);
             const infoButton = document.createElement('button');
-            infoButton.className = "bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 h-full rounded-r-full shadow-lg absolute -right-12 top-0 bottom-0 flex items-center justify-center";
+            infoButton.className = 'btn btn-primary ms-2 ms-md-3 btn-sm d-flex align-items-center justify-content-center';
+            infoButton.style.width = '45px';
             const icon2 = document.createElement('box-icon');
             icon2.setAttribute('name', 'info-circle');
+            icon2.setAttribute('size', 'sm');
             infoButton.appendChild(icon2);
-            contentWrapper.appendChild(infoButton);
+            buttonGroup.appendChild(infoButton);
             const infoDiv = document.createElement('div');
-            infoDiv.className = "hidden mt-2 p-2 bg-gray-200 rounded";
+            infoDiv.className = "d-none mt-3 p-3 bg-light rounded";
             infoDiv.textContent = `Min Value: ${this.minValue}, Mid Value: ${this.midValue}`;
             listItem.appendChild(infoDiv);
             listItem.appendChild(contentWrapper);
@@ -59,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.removeItem(listItem);
             });
             infoButton.addEventListener('click', () => {
-                infoDiv.classList.toggle('hidden');
+                infoDiv.classList.toggle('d-none');
             });
             this.updateBackground(listItem);
         }
@@ -68,17 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem(this.id, JSON.stringify(this));
         }
         updateBackground(listItem) {
+            listItem.classList.remove('.bg-success.bg-gradient', 'bg-warning', 'bg-danger');
             if (this.weight > this.midValue) {
-                listItem.classList.remove('bg-yellow-300');
-                listItem.classList.add('bg-green-400');
+                listItem.classList.add('.bg-success.bg-gradient');
             }
             else if (this.weight > this.minValue && this.weight <= this.midValue) {
-                listItem.classList.remove('bg-green-400');
-                listItem.classList.add('bg-yellow-300');
+                listItem.classList.add('bg-warning');
             }
             else {
-                listItem.classList.remove('bg-yellow-300', 'bg-green-400');
-                listItem.classList.add('bg-red-400');
+                listItem.classList.add('bg-danger');
             }
         }
         removeItem(listItem) {
@@ -93,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (itemData) {
                 const { name, weight, minValue, midValue, id } = JSON.parse(itemData);
                 if (itemData && id) {
-                    console.log(`Loading item with id: ${id}`); // Debug log
+                    console.log(`Loading item with id: ${id}`);
                     const item = new Parameters(name, weight, minValue, midValue, id);
                     item.addItem();
                 }
