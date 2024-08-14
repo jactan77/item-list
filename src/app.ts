@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const itemText = document.createElement('span');
             itemText.className = 'mb-3 mb-md-0 text-truncate';
             itemText.style.maxWidth = '100%';
-            itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
+            itemText.textContent = `${this.name} - Amount: ${this.weight}`;
             contentWrapper.appendChild(itemText);
 
             const buttonGroup = document.createElement('div');
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const infoDiv = document.createElement('div');
             infoDiv.className = "d-none mt-3 p-3 bg-light rounded";
-            infoDiv.textContent = `Min Value: ${this.minValue}, Mid Value: ${this.midValue}`;
+            infoDiv.textContent = `Min Amount: ${this.minValue}, Mid Amount: ${this.midValue}`;
             listItem.appendChild(infoDiv);
 
             listItem.appendChild(contentWrapper);
@@ -78,13 +78,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             buttonPlus.addEventListener('click', () => {
                 this.updateWeight(1);
-                itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
+                itemText.textContent = `${this.name} - Amount: ${this.weight}`;
                 this.updateBackground(listItem);
             });
 
             buttonMinus.addEventListener('click', () => {
                 this.updateWeight(-1);
-                itemText.textContent = `${this.name} - Weight: ${this.weight} kg`;
+                itemText.textContent = `${this.name} - Amount: ${this.weight} `;
                 this.updateBackground(listItem);
             });
 
