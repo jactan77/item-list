@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const itemList = document.getElementById('item-list');
     const errorMessage = document.getElementById('error-message');
     class Parameters {
-        constructor(name, weight, minValue, midValue, id) {
+        constructor(name, amount, minValue, midValue, id) {
             this.name = name;
-            this.weight = weight;
+            this.amount = amount;
             this.minValue = minValue;
             this.midValue = midValue;
             this.id = id;
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const itemText = document.createElement('span');
             itemText.className = 'mb-3 mb-md-0 text-truncate';
             itemText.style.maxWidth = '100%';
-            itemText.textContent = `${this.name} - Amount: ${this.weight}`;
+            itemText.textContent = `${this.name} - Amount: ${this.amount}`;
             contentWrapper.appendChild(itemText);
             const buttonGroup = document.createElement('div');
             buttonGroup.className = 'd-flex mt-3 mt-md-0 ms-auto';
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
             buttonGroup.appendChild(deleteButton);
             const infoButton = document.createElement('button');
             infoButton.className = 'btn btn-primary ms-2 ms-md-3 btn-sm d-flex align-items-center justify-content-center';
-            infoButton.style.width = '45px'; // Set width to match other buttons
+            infoButton.style.width = '45px';
             const icon2 = document.createElement('box-icon');
             icon2.setAttribute('name', 'info-circle');
             icon2.setAttribute('size', 'sm');
@@ -58,14 +58,19 @@ document.addEventListener("DOMContentLoaded", () => {
             listItem.setAttribute('data-id', this.id);
             itemList.appendChild(listItem);
             buttonPlus.addEventListener('click', () => {
-                this.updateWeight(1);
-                itemText.textContent = `${this.name} - Amount: ${this.weight}`;
+                this.updateAmount(1);
+                itemText.textContent = `${this.name} - Amount: ${this.amount}`;
                 this.updateBackground(listItem);
             });
             buttonMinus.addEventListener('click', () => {
-                this.updateWeight(-1);
-                itemText.textContent = `${this.name} - Amount: ${this.weight} `;
-                this.updateBackground(listItem);
+                if (this.amount > 0) {
+                    this.updateAmount(-1);
+                    itemText.textContent = `${this.name} - Amount: ${this.amount} `;
+                    this.updateBackground(listItem);
+                }
+                else {
+                    return;
+                }
             });
             deleteButton.addEventListener('click', () => {
                 this.removeItem(listItem);
@@ -75,16 +80,16 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             this.updateBackground(listItem);
         }
-        updateWeight(change) {
-            this.weight += change;
+        updateAmount(change) {
+            this.amount += change;
             localStorage.setItem(this.id, JSON.stringify(this));
         }
         updateBackground(listItem) {
             listItem.classList.remove('bg-success', 'bg-warning', 'bg-danger');
-            if (this.weight > this.midValue) {
+            if (this.amount > this.midValue) {
                 listItem.classList.add('bg-success');
             }
-            else if (this.weight > this.minValue && this.weight <= this.midValue) {
+            else if (this.amount > this.minValue && this.amount <= this.midValue) {
                 listItem.classList.add('bg-warning');
             }
             else {
@@ -101,10 +106,10 @@ document.addEventListener("DOMContentLoaded", () => {
         keys.forEach(key => {
             const itemData = localStorage.getItem(key);
             if (itemData) {
-                const { name, weight, minValue, midValue, id } = JSON.parse(itemData);
+                const { name, amount, minValue, midValue, id } = JSON.parse(itemData);
                 if (itemData && id) {
                     console.log(`Loading item with id: ${id}`);
-                    const item = new Parameters(name, weight, minValue, midValue, id);
+                    const item = new Parameters(name, amount, minValue, midValue, id);
                     item.addItem();
                 }
             }
@@ -113,19 +118,19 @@ document.addEventListener("DOMContentLoaded", () => {
     itemForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const itemName = document.querySelector('#item-name').value;
-        const itemWeight = parseFloat(document.querySelector('#item-weight').value);
-        const itemMinWeight = parseFloat(document.querySelector('#item-minValue').value);
-        const itemMiddWeight = parseFloat(document.querySelector('#item-midValue').value);
-        if (isNaN(itemWeight) || isNaN(itemMinWeight) || isNaN(itemMiddWeight) || itemWeight < 0 || itemMinWeight < 0 || itemMiddWeight < 0) {
-            errorMessage.textContent = 'Invalid input. Please enter positive numbers for weight and values.';
+        const itemAmount = parseFloat(document.querySelector('#item-weight').value);
+        const itemMinAmount = parseFloat(document.querySelector('#item-minValue').value);
+        const itemMidAmount = parseFloat(document.querySelector('#item-midValue').value);
+        if (isNaN(itemAmount) || isNaN(itemMinAmount) || isNaN(itemMidAmount) || itemAmount < 0 || itemMinAmount < 0 || itemMidAmount < 0) {
+            errorMessage.textContent = 'Invalid input. Please enter positive numbers for Amount and values.';
             return;
         }
-        else if (itemWeight < itemMinWeight || itemMinWeight > itemMiddWeight || itemMiddWeight > itemWeight) {
-            errorMessage.textContent = 'Invalid input. Please enter valid weight and values.';
+        else if (itemAmount < itemMinAmount || itemMinAmount > itemMidAmount || itemMidAmount > itemAmount) {
+            errorMessage.textContent = 'Invalid input. Please enter valid Amount and values.';
             return;
         }
         const id = Date.now().toString();
-        const item = new Parameters(itemName, itemWeight, itemMinWeight, itemMiddWeight, id);
+        const item = new Parameters(itemName, itemAmount, itemMinAmount, itemMidAmount, id);
         item.addItem();
         localStorage.setItem(item.id, JSON.stringify(item));
         errorMessage.textContent = "";
