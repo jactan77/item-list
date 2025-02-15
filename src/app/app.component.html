@@ -1,87 +1,86 @@
-<div id="app" class="container mt-4">
-    <h1 class="text-center mb-4">Item List</h1>
+<div id="app" class="container mt-4 dark-theme">
+  <h1 class="text-center mb-4 text-light">Item List</h1>
 
-    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="mb-4 p-4 bg-light shadow-sm rounded">
-        <div class="mb-3">
-            <input
-                    type="text"
-                    formControlName="name"
-                    class="form-control"
-                    [class.is-invalid]="itemForm.get('name')?.invalid && itemForm.get('name')?.touched"
-                    placeholder="Name"
-                    required
-            />
-            <div class="invalid-feedback" *ngIf="itemForm.get('name')?.errors?.['required'] && itemForm.get('name')?.touched">
-                Name is required
-            </div>
-            <div class="invalid-feedback" *ngIf="itemForm.get('name')?.errors?.['minlength'] && itemForm.get('name')?.touched">
-                Name must be at least 3 characters long
-            </div>
-        </div>
+  <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="mb-4 p-4 bg-dark shadow-sm rounded">
+    <div class="mb-3">
+      <input
+        type="text"
+        formControlName="name"
+        class="form-control bg-dark text-light border-secondary"
+        [class.is-invalid]="itemForm.get('name')?.invalid && itemForm.get('name')?.touched"
+        placeholder="Name"
+        required
+      />
+      <div class="invalid-feedback text-warning" *ngIf="itemForm.get('name')?.errors?.['required'] && itemForm.get('name')?.touched">
+        Name is required
+      </div>
+      <div class="invalid-feedback text-warning" *ngIf="itemForm.get('name')?.errors?.['minlength'] && itemForm.get('name')?.touched">
+        Name must be at least 3 characters long
+      </div>
+    </div>
 
-        <div class="mb-3">
-            <input
-                    type="number"
-                    formControlName="amount"
-                    class="form-control"
-                    [class.is-invalid]="itemForm.get('amount')?.invalid && itemForm.get('amount')?.touched"
-                    placeholder="Amount"
-                    required
-            />
-            <div class="invalid-feedback" *ngIf="itemForm.get('amount')?.errors?.['required'] && itemForm.get('amount')?.touched">
-                Amount is required
-            </div>
-            <div class="invalid-feedback" *ngIf="itemForm.get('amount')?.errors?.['min'] && itemForm.get('amount')?.touched">
-                Amount must be greater than 0
-            </div>
-        </div>
+    <div class="mb-3">
+      <input
+        type="number"
+        formControlName="amount"
+        class="form-control bg-dark text-light border-secondary"
+        [class.is-invalid]="itemForm.get('amount')?.invalid && itemForm.get('amount')?.touched"
+        placeholder="Amount"
+        required
+      />
+      <div class="invalid-feedback text-warning" *ngIf="itemForm.get('amount')?.errors?.['required'] && itemForm.get('amount')?.touched">
+        Amount is required
+      </div>
+      <div class="invalid-feedback text-warning" *ngIf="itemForm.get('amount')?.errors?.['min'] && itemForm.get('amount')?.touched">
+        Amount must be greater than 0
+      </div>
+    </div>
 
-        <div class="mb-3">
-            <input
-                    type="number"
-                    formControlName="minValue"
-                    class="form-control"
-                    [class.is-invalid]="itemForm.get('minValue')?.invalid && itemForm.get('minValue')?.touched"
-                    placeholder="Min-Amount (kg)"
-                    required
-            />
-            <div class="invalid-feedback" *ngIf="itemForm.get('minValue')?.errors?.['required'] && itemForm.get('minValue')?.touched">
-                Min-Amount is required
-            </div>
-        </div>
+    <div class="mb-3">
+      <input
+        type="number"
+        formControlName="minValue"
+        class="form-control bg-dark text-light border-secondary"
+        [class.is-invalid]="itemForm.get('minValue')?.invalid && itemForm.get('minValue')?.touched"
+        placeholder="Min-Amount (kg)"
+        required
+      />
+      <div class="invalid-feedback text-warning" *ngIf="itemForm.get('minValue')?.errors?.['required'] && itemForm.get('minValue')?.touched">
+        Min-Amount is required
+      </div>
+    </div>
 
-        <div class="mb-3">
-            <input
-                    type="number"
-                    formControlName="midValue"
-                    class="form-control"
-                    [class.is-invalid]="itemForm.get('midValue')?.invalid && itemForm.get('midValue')?.touched"
-                    placeholder="Middle-Amount (kg)"
-                    required
-            />
-            <div class="invalid-feedback" *ngIf="itemForm.get('midValue')?.errors?.['required'] && itemForm.get('midValue')?.touched">
-                Middle-Amount is required
-            </div>
-        </div>
+    <div class="mb-3">
+      <input
+        type="number"
+        formControlName="midValue"
+        class="form-control bg-dark text-light border-secondary"
+        [class.is-invalid]="itemForm.get('midValue')?.invalid && itemForm.get('midValue')?.touched"
+        placeholder="Middle-Amount (kg)"
+        required
+      />
+      <div class="invalid-feedback text-warning" *ngIf="itemForm.get('midValue')?.errors?.['required'] && itemForm.get('midValue')?.touched">
+        Middle-Amount is required
+      </div>
+    </div>
 
-        <div *ngIf="itemForm.errors?.['invalidNumbers'] || itemForm.errors?.['invalidRange']" class="alert alert-danger">
-            {{ errorMessage }}
-        </div>
+    <div *ngIf="itemForm.errors?.['invalidNumbers'] || itemForm.errors?.['invalidRange']" class="alert alert-danger bg-danger text-light border-0">
+      {{ errorMessage }}
+    </div>
 
-        <button id="button" type="submit" class="btn btn-primary w-100" [disabled]="itemForm.invalid">
-            Add Item
-        </button>
-    </form>
+    <button id="button" type="submit" class="btn btn-primary w-100" [disabled]="itemForm.invalid">
+      Add Item
+    </button>
+  </form>
 
-    <app-item
-
-            *ngFor="let item of items"
-            [@itemAnimation]
-            [formData]="item"
-            [items]="items"
-            (itemRemoved)="removeItem($event)"
-            (itemDecrease)="onDecrease($event)"
-            (itemIncrease)="onIncrease($event)"
-    >
-    </app-item>
+  <app-item
+    *ngFor="let item of items"
+    [@itemAnimation]
+    [formData]="item"
+    [items]="items"
+    (itemRemoved)="removeItem($event)"
+    (itemDecrease)="onDecrease($event)"
+    (itemIncrease)="onIncrease($event)"
+  >
+  </app-item>
 </div>

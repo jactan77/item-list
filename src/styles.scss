@@ -1,0 +1,46 @@
+$dark-bg: #121212;
+$dark-text: #e1e1e1;
+$scrollbar-width: 8px;
+$scrollbar-track: #1a1a1a;
+$scrollbar-thumb: #333;
+$scrollbar-thumb-hover: #444;
+$placeholder-color: #888;
+$transition-duration: 0.3s;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: $dark-bg;
+  color: $dark-text;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: $scrollbar-width;
+  height: $scrollbar-width;
+}
+
+::-webkit-scrollbar-track {
+  background: $scrollbar-track;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $scrollbar-thumb;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $scrollbar-thumb-hover;
+}
+
+input::placeholder {
+  color: $placeholder-color !important;
+  opacity: 1;
+}
+
+* {
+  transition: background-color $transition-duration ease,
+  color $transition-duration ease;
+}

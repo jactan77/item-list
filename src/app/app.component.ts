@@ -6,6 +6,11 @@ import {NgForOf, NgIf} from '@angular/common';
 import {amountValuesValidator} from './shared/validators/amount-values.validator';
 import {LocalStorageService} from './shared/services/local-storage.service';
 import { trigger, style, animate, transition } from '@angular/animations';
+import {ThemeService} from './shared/services/theme.service';
+import {Observable} from 'rxjs';
+import {ThemeToggleComponent} from './shared/components/theme-toggle/theme-toggle.component';
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -15,7 +20,9 @@ import { trigger, style, animate, transition } from '@angular/animations';
     ItemComponent,
     ReactiveFormsModule,
     NgIf,
-    NgForOf
+    NgForOf,
+    ThemeToggleComponent,
+
   ],
   animations: [
     trigger('itemAnimation', [
@@ -31,9 +38,9 @@ export class AppComponent implements OnInit{
   formData!: Item;
   errorMessage: string = '';
   items : Item[] = [];
+  isDarkMode$: Observable<boolean>;
 
-
-  constructor(private fb: FormBuilder,private localStorageService:LocalStorageService) {
+  constructor(private fb: FormBuilder,private localStorageService:LocalStorageService, private themeService:ThemeService) {
     this.itemForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       amount: [null, [Validators.required, Validators.min(1)]],
@@ -44,7 +51,10 @@ export class AppComponent implements OnInit{
     },{
       validators: amountValuesValidator
     });
+    this.isDarkMode$= this.themeService.darkMode$;
   }
+
+
   ngOnInit() {
       this.items = this.loadItems();
   }

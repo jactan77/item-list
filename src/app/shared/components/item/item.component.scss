@@ -3,6 +3,11 @@ $spacing-sm: 2px;
 $button-height: 35px;
 $border-radius: 6px;
 
+$dark-bg: #1a1a1a;
+$dark-border: rgba(255, 255, 255, 0.15);
+$dark-text: #e1e1e1;
+$dark-shadow: rgba(0, 0, 0, 0.3);
+
 @use "sass:color";
 
 .item {
@@ -12,13 +17,16 @@ $border-radius: 6px;
     padding: 1rem;
     border-radius: $border-radius;
     margin-bottom: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: $dark-bg;
+    border: 1px solid $dark-border;
+    box-shadow: 0 2px 10px $dark-shadow;
+    color: $dark-text;
 
     animation: addItem 0.4s ease-out;
     transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     transform: translateX(0) translateY(0);
     opacity: 1;
+
     &.removing {
       transform: translateY(100%);
       opacity: 0;
@@ -26,8 +34,8 @@ $border-radius: 6px;
       padding: 0;
       height: 0;
     }
-
   }
+
   @keyframes addItem {
     0% {
       opacity: 0;
@@ -50,6 +58,7 @@ $border-radius: 6px;
 
   &__text {
     font-size: 16px;
+    color: $dark-text;
   }
 
   &-buttons {
@@ -64,31 +73,31 @@ $border-radius: 6px;
     align-items: center;
     justify-content: center;
     border-radius: $border-radius;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 1px solid $dark-border;
 
     &--action {
-      background-color: #6c757d;
-      color: white;
+      background-color: #495057;
+      color: $dark-text;
       font-size: 18px;
       font-weight: bold;
       &:hover {
-        background-color: color.adjust(#6c757d, $lightness: -5%);
+        background-color: color.adjust(#495057, $lightness: 10%);
       }
     }
 
     &--delete {
       background-color: #dc3545;
-      color: white;
+      color: $dark-text;
       &:hover {
-        background-color: color.adjust(#dc3545, $lightness: -5%);
+        background-color: color.adjust(#dc3545, $lightness: 10%);
       }
     }
 
     &--info {
       background-color: #0d6efd;
-      color: white;
+      color: $dark-text;
       &:hover {
-        background-color: color.adjust(#0d6efd, $lightness: -5%);
+        background-color: color.adjust(#0d6efd, $lightness: 10%);
       }
     }
   }
@@ -101,6 +110,7 @@ $border-radius: 6px;
     padding: 0;
     transition: all 0.3s ease-in-out;
     border-radius: $border-radius;
+    background-color: color.adjust($dark-bg, $lightness: 5%);
 
     &--visible {
       opacity: 1;
