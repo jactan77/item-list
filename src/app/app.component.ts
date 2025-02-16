@@ -8,7 +8,6 @@ import {LocalStorageService} from './shared/services/local-storage.service';
 import { trigger, style, animate, transition } from '@angular/animations';
 import {ThemeService} from './shared/services/theme.service';
 import {Observable} from 'rxjs';
-import {ThemeToggleComponent} from './shared/components/theme-toggle/theme-toggle.component';
 
 
 @Component({
@@ -20,9 +19,7 @@ import {ThemeToggleComponent} from './shared/components/theme-toggle/theme-toggl
     ItemComponent,
     ReactiveFormsModule,
     NgIf,
-    NgForOf,
-    ThemeToggleComponent,
-
+    NgForOf
   ],
   animations: [
     trigger('itemAnimation', [
@@ -86,26 +83,67 @@ export class AppComponent implements OnInit{
     }
   }
 
-  removeItem(id: string): void {
-    this.items = this.items.filter(item => item.id !== id);
-    this.localStorageService.removeItem(id);
-  }
-  onDecrease(id: string): void{
-    const item  = this.items.find(item => item.id === id);
-    if( item && item?.amount > 0) {
-      item.amount--;
-      this.toggleBackground(id);
-      this.localStorageService.setItem(id,item);
-    }
-  }
-  onIncrease(id: string): void{
-    const item  = this.items.find(item => item.id === id);
-    if(item) {
-      item.amount++;
-      this.toggleBackground(id);
-      this.localStorageService.setItem(id,item);
-    }
+  onEventItem(event:{value:string,action:string }): void{
+      const item: Item | undefined = this.items.find(item => item.id === event.value);
+      switch (event.action){
+        case 'removeItem': {
+          this.items = this.items.filter(item => item.id !== event.value);
+          this.localStorageService.removeItem(event.value);
+          break;
+        }
+        case 'onDecrease':{
+          if( item && item?.amount > 0) {
+            item.amount--;
+            this.toggleBackground(event.value);
+            this.localStorageService.setItem(event.value,item);
 
+          }
+          break;
+        }
+        case 'onIncrease':{
+          if(item) {
+            item.amount++;
+            this.toggleBackground(event.value);
+            this.localStorageService.setItem(event.value,item);
+          }
+          break;
+        }
+        case 'onMidValueDecrease':{
+          if((item && item?.midValue > 0) &&  (item?.midValue > item?.minValue+1)){
+            item.midValue--;
+            this.toggleBackground(event.value);
+            this.localStorageService.setItem(event.value,item);
+          }
+          break;
+        }
+        case 'onMidValueIncrease':{
+          if(item){
+            item.midValue++;
+            this.toggleBackground(event.value);
+            this.localStorageService.setItem(event.value,item);
+          }
+          break;
+        }
+        case 'onMinValueDecrease':{
+          if( item &&  (item?.minValue > 0)){
+            item.minValue--;
+            this.toggleBackground(event.value);
+            this.localStorageService.setItem(event.value,item);
+          }
+          break;
+        }
+        case 'onMinValueIncrease':{
+          if( item &&  (item?.minValue < item?.midValue-1)){
+            item.minValue++;
+            this.toggleBackground(event.value);
+            this.localStorageService.setItem(event.value,item);
+          }
+          break;
+        }
+        default:{
+          console.error("Invalid request");
+        }
+      }
   }
   toggleBackground(id:string):void{
     const item = this.items.find(item => item.id === id);

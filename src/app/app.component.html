@@ -78,9 +78,7 @@
     [@itemAnimation]
     [formData]="item"
     [items]="items"
-    (itemRemoved)="removeItem($event)"
-    (itemDecrease)="onDecrease($event)"
-    (itemIncrease)="onIncrease($event)"
+    (itemEvent)="onEventItem($event)"
   >
   </app-item>
 </div>
