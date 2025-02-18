@@ -1,14 +1,13 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import { Item } from './shared/components/item/Item';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ItemComponent } from './shared/components/item/item.component';
+import {ImageComponent} from './shared/components/image/image.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {amountValuesValidator} from './shared/validators/amount-values.validator';
-import {LocalStorageService} from './shared/services/local-storage.service';
+import {CacheStorageService} from './shared/services/cache-storage.service';
 import { trigger, style, animate, transition } from '@angular/animations';
-import {ThemeService} from './shared/services/theme.service';
-import {Observable} from 'rxjs';
-
+import {Observable, from} from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +16,7 @@ import {Observable} from 'rxjs';
   standalone: true,
   imports: [
     ItemComponent,
+    ImageComponent,
     ReactiveFormsModule,
     NgIf,
     NgForOf
@@ -30,50 +30,64 @@ import {Observable} from 'rxjs';
     ])
   ]
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
+  @ViewChild(ImageComponent) imageComponent!: ImageComponent;
   itemForm: FormGroup;
   formData!: Item;
   errorMessage: string = '';
-  items : Item[] = [];
-  isDarkMode$: Observable<boolean>;
+  items: Item[] = [];
 
-  constructor(private fb: FormBuilder,private localStorageService:LocalStorageService, private themeService:ThemeService) {
+
+  constructor(
+    private fb: FormBuilder,
+    private cacheService: CacheStorageService
+  ) {
     this.itemForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       amount: [null, [Validators.required, Validators.min(1)]],
       minValue: [null, [Validators.required, Validators.min(0)]],
       midValue: [null, [Validators.required, Validators.min(0)]],
-      id: ['']
-
-    },{
+      id: [''],
+      img:[null]
+    }, {
       validators: amountValuesValidator
     });
-    this.isDarkMode$= this.themeService.darkMode$;
   }
 
-
-  ngOnInit() {
-      this.items = this.loadItems();
+  async ngOnInit() {
+    this.items = await this.loadItems();
   }
 
-  loadItems(): Item[]{
-    const keys: string[] = Object.keys(localStorage);
-    return  keys
-      .map(key => this.localStorageService.getItem<Item>(key))
-      .filter((itemData): itemData is Item => itemData !== null);
+  async loadItems(): Promise<Item[]> {
+    const keys = await this.cacheService.getAllKeys();
+    const items: Item[] = [];
+
+    for (const key of keys) {
+      const item = await this.cacheService.getItem<Item>(key);
+      if (item !== null) {
+        items.push(item);
+      }
+    }
+
+    return items;
   }
-  onSubmit() {
+
+  async onSubmit() {
     if (this.itemForm.valid) {
       const newItem: Item = {
         ...this.itemForm.value,
         id: Math.floor(Math.random() * 1000).toString(),
-        color:"bg-success"
+        color: "bg-success"
       };
+      if (this.itemForm.get('img')?.value) {
+        newItem.img = this.itemForm.get('img')?.value;
+      }
 
-      this.localStorageService.setItem(newItem.id,newItem);
+      await this.cacheService.setItem(newItem.id, newItem);
       this.items.push(newItem);
       this.formData = newItem;
       this.itemForm.reset();
+      this.imageComponent.resetImage();
     } else {
       if (this.itemForm.errors?.['invalidNumbers']) {
         this.errorMessage = 'Invalid input. Please enter positive numbers for Amount and values.';
@@ -83,82 +97,78 @@ export class AppComponent implements OnInit{
     }
   }
 
-  onEventItem(event:{value:string,action:string }): void{
-      const item: Item | undefined = this.items.find(item => item.id === event.value);
-      switch (event.action){
-        case 'removeItem': {
-          this.items = this.items.filter(item => item.id !== event.value);
-          this.localStorageService.removeItem(event.value);
-          break;
-        }
-        case 'onDecrease':{
-          if( item && item?.amount > 0) {
-            item.amount--;
-            this.toggleBackground(event.value);
-            this.localStorageService.setItem(event.value,item);
+  async onEventItem(event: {value: string, action: string}): Promise<void> {
+    const item: Item | undefined = this.items.find(item => item.id === event.value);
 
-          }
-          break;
-        }
-        case 'onIncrease':{
-          if(item) {
-            item.amount++;
-            this.toggleBackground(event.value);
-            this.localStorageService.setItem(event.value,item);
-          }
-          break;
-        }
-        case 'onMidValueDecrease':{
-          if((item && item?.midValue > 0) &&  (item?.midValue > item?.minValue+1)){
-            item.midValue--;
-            this.toggleBackground(event.value);
-            this.localStorageService.setItem(event.value,item);
-          }
-          break;
-        }
-        case 'onMidValueIncrease':{
-          if(item){
-            item.midValue++;
-            this.toggleBackground(event.value);
-            this.localStorageService.setItem(event.value,item);
-          }
-          break;
-        }
-        case 'onMinValueDecrease':{
-          if( item &&  (item?.minValue > 0)){
-            item.minValue--;
-            this.toggleBackground(event.value);
-            this.localStorageService.setItem(event.value,item);
-          }
-          break;
-        }
-        case 'onMinValueIncrease':{
-          if( item &&  (item?.minValue < item?.midValue-1)){
-            item.minValue++;
-            this.toggleBackground(event.value);
-            this.localStorageService.setItem(event.value,item);
-          }
-          break;
-        }
-        default:{
-          console.error("Invalid request");
-        }
+    switch (event.action) {
+      case 'removeItem': {
+        this.items = this.items.filter(item => item.id !== event.value);
+        await this.cacheService.removeItem(event.value);
+        break;
       }
+      case 'onDecrease': {
+        if (item && item.amount > 0) {
+          item.amount--;
+          this.toggleBackground(event.value);
+          await this.cacheService.setItem(event.value, item);
+        }
+        break;
+      }
+      case 'onIncrease': {
+        if (item) {
+          item.amount++;
+          this.toggleBackground(event.value);
+          await this.cacheService.setItem(event.value, item);
+        }
+        break;
+      }
+      case 'onMidValueDecrease': {
+        if ((item && item.midValue > 0) && (item.midValue > item.minValue + 1)) {
+          item.midValue--;
+          this.toggleBackground(event.value);
+          await this.cacheService.setItem(event.value, item);
+        }
+        break;
+      }
+      case 'onMidValueIncrease': {
+        if (item) {
+          item.midValue++;
+          this.toggleBackground(event.value);
+          await this.cacheService.setItem(event.value, item);
+        }
+        break;
+      }
+      case 'onMinValueDecrease': {
+        if (item && item.minValue > 0) {
+          item.minValue--;
+          this.toggleBackground(event.value);
+          await this.cacheService.setItem(event.value, item);
+        }
+        break;
+      }
+      case 'onMinValueIncrease': {
+        if (item && item.minValue < item.midValue - 1) {
+          item.minValue++;
+          this.toggleBackground(event.value);
+          await this.cacheService.setItem(event.value, item);
+        }
+        break;
+      }
+      default: {
+        console.error("Invalid request");
+      }
+    }
   }
-  toggleBackground(id:string):void{
+
+  toggleBackground(id: string): void {
     const item = this.items.find(item => item.id === id);
-    if(!item) return;
-    const {amount,midValue, minValue} = item;
-    item.color =
-          amount > midValue
-          ? 'bg-success'
-          : amount > minValue
-          ? 'bg-warning'
-          : 'bg-danger';
+    if (!item) return;
+
+    const {amount, midValue, minValue} = item;
+    item.color = amount > midValue
+      ? 'bg-success'
+      : amount > minValue
+        ? 'bg-warning'
+        : 'bg-danger';
   }
-
-
-
-
 }
-

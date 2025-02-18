@@ -1,12 +1,13 @@
 import {Component,EventEmitter, Input, Output} from '@angular/core';
 import {Item} from './Item';
-import {NgClass} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-item',
   templateUrl: './item.component.html',
   imports: [
     NgClass,
+    NgIf,
 
   ],
   styleUrls: ['./item.component.scss']
@@ -38,6 +39,8 @@ export class ItemComponent {
     this.showInfo = !this.showInfo;
 
   }
+
+
   changeValues(): void{
     this.showEdit = !this.showEdit;
   }

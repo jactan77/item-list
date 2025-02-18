@@ -2,9 +2,14 @@
     [class.removing]="isRemoving"
     class="item-list">
   <div class="item__content">
-        <span class="item__text">
-            {{formData.name}} - Amount: {{formData.amount}}
-        </span>
+    <!-- Add image container -->
+    <div class="item__image-container" *ngIf="formData.img">
+      <img [src]="formData.img" alt="Item image" class="item__image">
+    </div>
+
+    <span class="item__text">
+      {{formData.name}} - Amount: {{formData.amount}}
+    </span>
 
     <div class="item-buttons">
       <button class="item__button item__button--action"
@@ -62,7 +67,6 @@
 
   <div class="item__edit" [class.item__edit--visible]="showEdit">
     <div class="item__edit-values">
-
       <div class="item__edit-values--min">
         <div class="value-content">
           {{formData.minValue}}

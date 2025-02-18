@@ -5,4 +5,5 @@ export interface Item {
   midValue: number;
   id: string;
   color: string;
+  img?: string;
 }

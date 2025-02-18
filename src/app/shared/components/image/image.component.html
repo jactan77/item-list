@@ -1,0 +1,22 @@
+<div class="mb-3">
+  <div class="image-upload-container">
+    <img
+      *ngIf="imagePreview"
+      [src]="imagePreview"
+      class="preview-image mb-2 rounded"
+      alt="Preview"
+    />
+    <div class="custom-file">
+      <input
+        #fileInput
+        type="file"
+        class="custom-file-input form-control bg-dark text-light border-secondary"
+        (change)="onImagePicked($event)"
+        accept="image/*"
+      />
+      <div class="invalid-feedback text-warning" *ngIf="itemForm.get('img')?.errors?.['invalidMimeType']">
+        Invalid file type. Please upload an image.
+      </div>
+    </div>
+  </div>
+</div>

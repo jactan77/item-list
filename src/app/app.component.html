@@ -2,6 +2,8 @@
   <h1 class="text-center mb-4 text-light">Item List</h1>
 
   <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="mb-4 p-4 bg-dark shadow-sm rounded">
+    <app-image [itemForm]="itemForm"></app-image>
+
     <div class="mb-3">
       <input
         type="text"
