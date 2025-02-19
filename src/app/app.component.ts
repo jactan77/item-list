@@ -7,12 +7,11 @@ import {NgForOf, NgIf} from '@angular/common';
 import {amountValuesValidator} from './shared/validators/amount-values.validator';
 import {CacheStorageService} from './shared/services/cache-storage.service';
 import { trigger, style, animate, transition } from '@angular/animations';
-import {Observable, from} from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
   standalone: true,
   imports: [
     ItemComponent,
@@ -32,6 +31,7 @@ import {Observable, from} from 'rxjs';
 })
 export class AppComponent implements OnInit {
   @ViewChild(ImageComponent) imageComponent!: ImageComponent;
+  @ViewChild(ItemComponent) itemComponent!: ItemComponent;
   itemForm: FormGroup;
   formData!: Item;
   errorMessage: string = '';
@@ -154,8 +154,32 @@ export class AppComponent implements OnInit {
         }
         break;
       }
+
       default: {
         console.error("Invalid request");
+      }
+    }
+  }
+  async onNewValuesEvent(event: {id:string,value: number, action: string}):Promise<void>{
+    const item : Item | undefined  = this.items.find(item => item.id === event.id);
+    switch(event.action){
+      case 'onNewMidValue':{
+        if(item && this.itemComponent.isValuesValid()){
+          item.midValue =  event.value;
+          this.toggleBackground(event.id);
+          await this.cacheService.setItem(event.id,item);
+        }
+        break;
+      }
+    }
+    switch(event.action){
+      case 'onNewMinValue':{
+        if(item && this.itemComponent.isValuesValid()){
+          item.minValue =  event.value;
+          this.toggleBackground(event.id);
+          await this.cacheService.setItem(event.id,item);
+        }
+        break;
       }
     }
   }

@@ -2,7 +2,6 @@
     [class.removing]="isRemoving"
     class="item-list">
   <div class="item__content">
-    <!-- Add image container -->
     <div class="item__image-container" *ngIf="formData.img">
       <img [src]="formData.img" alt="Item image" class="item__image">
     </div>
@@ -68,18 +67,14 @@
   <div class="item__edit" [class.item__edit--visible]="showEdit">
     <div class="item__edit-values">
       <div class="item__edit-values--min">
-        <div class="value-content">
-          {{formData.minValue}}
-        </div>
+        <input type="number" class="value-content" [(ngModel)]="formData.minValue" (ngModelChange)="onNewMinValue(formData.id)" [class.error]="!isValuesValid()">
         <div class="button-group">
           <button class="item__edit-button" (click)="onMinIncrease(formData.id)">+</button>
           <button class="item__edit-button" (click)="onMinDecrease(formData.id)">-</button>
         </div>
       </div>
       <div class="item__edit-values--mid">
-        <div class="value-content">
-          {{formData.midValue}}
-        </div>
+        <input type="number" class="value-content" [(ngModel)]="formData.midValue" (ngModelChange)="onNewMidValue(formData.id)" [class.error]="!isValuesValid()" >
         <div class="button-group">
           <button class="item__edit-button" (click)="onMidIncrease(formData.id)" >+</button>
           <button class="item__edit-button" (click)="onMidValueDecrease(formData.id)">-</button>

@@ -1,5 +1,6 @@
-$button-width: 45px;
-$button-height: 35px;
+
+$button-width: clamp(35px, 4vw, 45px);
+$button-height: clamp(30px, 3.5vw, 35px);
 $border-radius: 6px;
 $spacing-sm: 2px;
 
@@ -33,6 +34,7 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
     transform: translateX(0) translateY(0);
     opacity: 1;
     height: auto;
+    font-size: clamp(14px, 2vw, 18px);
 
     &.removing {
       transform: translateY(100%);
@@ -46,8 +48,8 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
   &__image-container {
     margin-right: 1rem;
     flex-shrink: 0;
-    width: 90px;
-    height: 90px;
+    width: clamp(60px, 20vw, 90px);
+    height: clamp(60px, 20vw, 90px);
     border-radius: $border-radius;
     overflow: hidden;
     border: 1px solid $dark-border;
@@ -71,7 +73,7 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
   &__text {
     flex: 1;
     margin-right: 1rem;
-    font-size: 16px;
+    font-size: clamp(14px, 2vw, 16px);
     color: $dark-text;
   }
 
@@ -87,10 +89,15 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
     border-radius: $border-radius;
     border: 1px solid $dark-border;
 
+    svg {
+      width: clamp(16px, 2vw, 20px);
+      height: clamp(16px, 2vw, 20px);
+    }
+
     &--action {
       background-color: #495057;
       color: $dark-text;
-      font-size: 18px;
+      font-size: clamp(16px, 2.5vw, 18px);
       font-weight: bold;
       &:hover {
         background-color: lighten(#495057, 10%);
@@ -123,6 +130,7 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
     @include transition-base;
     border-radius: $border-radius;
     background-color: lighten($dark-bg, 5%);
+    font-size: clamp(12px, 1.8vw, 16px);
 
     &--visible {
       opacity: 1;
@@ -148,7 +156,7 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: clamp(12px, 1.8vw, 16px);
 
     &--visible {
       opacity: 1;
@@ -171,14 +179,41 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
         padding: 0.25rem 0.5rem;
         border-radius: $border-radius;
         background-color: lighten($dark-bg, 8%);
-        font-size: 0.85rem;
+        font-size: clamp(12px, 1.5vw, 14px);
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        min-width: 0;
+        max-width: 100%;
 
         .value-content {
           flex: 1;
           text-align: center;
+          min-width: 30px;
+          width: fit-content;
+          height: 100%;
+          background-color: lighten($dark-bg, 8%);
+          color: $dark-text;
+          border: 1px solid $dark-border;
+          border-radius: $border-radius;
+          padding: 0.25rem;
+          outline: none;
+          font-size: clamp(12px, 1.5vw, 14px);
+          resize: none;
+          white-space: nowrap;
+
+
+          &:focus {
+            border-color: lighten($dark-border, 15%);
+            background-color: lighten($dark-bg, 12%);
+            overflow: visible;
+            white-space: normal;
+          }
+          &.error {
+            border-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+          }
         }
 
         .button-group {
@@ -190,13 +225,13 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
     }
 
     &-button {
-      width: 15px;
-      height: 15px;
+      width: clamp(12px, 1.5vw, 15px);
+      height: clamp(12px, 1.5vw, 15px);
       border-radius: $border-radius;
       border: 1px solid $dark-border;
       background-color: lighten($dark-bg, 12%);
       color: $dark-text;
-      font-size: 14px;
+      font-size: clamp(10px, 1.2vw, 14px);
       font-weight: bold;
       cursor: pointer;
       display: flex;
@@ -223,5 +258,16 @@ $dark-shadow: rgba(0, 0, 0, 0.3);
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-2px);
+  }
+  40%, 80% {
+    transform: translateX(2px);
   }
 }

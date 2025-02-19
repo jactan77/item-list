@@ -1,6 +1,7 @@
 import {Component,EventEmitter, Input, Output} from '@angular/core';
 import {Item} from './Item';
 import {NgClass, NgIf} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-item',
@@ -8,6 +9,7 @@ import {NgClass, NgIf} from '@angular/common';
   imports: [
     NgClass,
     NgIf,
+    FormsModule,
 
   ],
   styleUrls: ['./item.component.scss']
@@ -16,6 +18,8 @@ export class ItemComponent {
   @Input() items: Item[] = [];
   @Input() formData!: Item;
   @Output() itemEvent: EventEmitter<{value:string,action:string}> = new EventEmitter<{value:string,action:string}>();
+  @Output() newValuesItem: EventEmitter<{id:string,value:number, action:string}> = new EventEmitter<{id:string,value:number, action:string}>;
+
   isRemoving : boolean = false;
   showInfo: boolean = false;
   showEdit: boolean = false;
@@ -23,6 +27,10 @@ export class ItemComponent {
   emitEvent(value: string, action: string) {
     this.itemEvent.emit({value, action});
   }
+  emitNewValuesItem(id:string, value: number, action: string){
+    this.newValuesItem.emit({id,value,action});
+  }
+
   removeItem(id:string): void{
     this.isRemoving = true;
     setTimeout(()=>{
@@ -64,6 +72,16 @@ export class ItemComponent {
   onMinIncrease(id:string):void{
     this.emitEvent(id,'onMinValueIncrease');
   }
+  onNewMidValue(id:string): void{
+    this.emitNewValuesItem(id, this.formData.midValue, 'onNewMidValue');
+  }
+  onNewMinValue(id:string):void{
+    this.emitNewValuesItem(id, this.formData.midValue, 'onNewMinValue');
+  }
+  isValuesValid():boolean{
+    return this.formData.midValue > this.formData.minValue && (this.formData.midValue > 0 && this.formData.minValue>0);
+  }
+
 
 
 }
