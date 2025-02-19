@@ -67,14 +67,14 @@
   <div class="item__edit" [class.item__edit--visible]="showEdit">
     <div class="item__edit-values">
       <div class="item__edit-values--min">
-        <input type="number" class="value-content" [(ngModel)]="formData.minValue" (ngModelChange)="onNewMinValue(formData.id)" [class.error]="!isValuesValid()">
+        <input type="number" class="value-content" [(ngModel)]="formData.minValue" (ngModelChange)="onNewMinValue($event)" (blur)="onBlurMin(formData.id)" [class.error]="!isValuesValid()">
         <div class="button-group">
           <button class="item__edit-button" (click)="onMinIncrease(formData.id)">+</button>
           <button class="item__edit-button" (click)="onMinDecrease(formData.id)">-</button>
         </div>
       </div>
       <div class="item__edit-values--mid">
-        <input type="number" class="value-content" [(ngModel)]="formData.midValue" (ngModelChange)="onNewMidValue(formData.id)" [class.error]="!isValuesValid()" >
+        <input type="number" class="value-content" [(ngModel)]="formData.midValue" (ngModelChange)="onNewMidValue($event)" (blur)="onBlurMid(formData.id)" [class.error]="!isValuesValid()" >
         <div class="button-group">
           <button class="item__edit-button" (click)="onMidIncrease(formData.id)" >+</button>
           <button class="item__edit-button" (click)="onMidValueDecrease(formData.id)">-</button>

@@ -1,4 +1,4 @@
-import {Component,EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Item} from './Item';
 import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -18,7 +18,15 @@ export class ItemComponent {
   @Input() items: Item[] = [];
   @Input() formData!: Item;
   @Output() itemEvent: EventEmitter<{value:string,action:string}> = new EventEmitter<{value:string,action:string}>();
-  @Output() newValuesItem: EventEmitter<{id:string,value:number, action:string}> = new EventEmitter<{id:string,value:number, action:string}>;
+  @Output() newValuesItem: EventEmitter<{id:string,value:number, action:string}> = new EventEmitter<{id:string,value:number, action:string}>();
+
+
+
+  tempMinValue: number =0;
+  tempMidValue: number = 0;
+
+  updateMinValue: number = 0;
+  updateMidValue:number = 0;
 
   isRemoving : boolean = false;
   showInfo: boolean = false;
@@ -72,16 +80,41 @@ export class ItemComponent {
   onMinIncrease(id:string):void{
     this.emitEvent(id,'onMinValueIncrease');
   }
-  onNewMidValue(id:string): void{
-    this.emitNewValuesItem(id, this.formData.midValue, 'onNewMidValue');
+
+  onNewMidValue(event: Event | null): void {
+  if(event && event.target) {
+    const value = (event.target as HTMLInputElement).value;
+    if (value) {
+      this.tempMidValue = parseInt(value);
+    }
   }
-  onNewMinValue(id:string):void{
-    this.emitNewValuesItem(id, this.formData.midValue, 'onNewMinValue');
+  }
+
+  onNewMinValue(event: Event | null): void {
+    if(event && event.target) {
+      const value = (event.target as HTMLInputElement).value;
+      if (value) {
+        this.tempMinValue = parseInt(value);
+      }
+    }
+  }
+  onBlurMid(id:string){
+    if(this.tempMidValue > 0) {
+      this.formData.midValue = this.tempMidValue;
+    }
+      this.emitNewValuesItem(id, this.formData.midValue, 'onNewMidValue');
+
+  }
+  onBlurMin(id:string){
+  if(this.tempMinValue > 0) {
+    this.formData.minValue = this.tempMinValue;
+  }
+    this.emitNewValuesItem(id,this.formData.minValue,'onNewMinValue');
   }
   isValuesValid():boolean{
     return this.formData.midValue > this.formData.minValue && (this.formData.midValue > 0 && this.formData.minValue>0);
   }
 
 
-
+  protected readonly HTMLInputElement = HTMLInputElement;
 }
