@@ -1,7 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, input, Input, OnInit, Output} from '@angular/core';
 import {Item} from './Item';
 import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {reportUnhandledError} from 'rxjs/internal/util/reportUnhandledError';
 
 @Component({
   selector: 'app-item',
@@ -14,7 +15,7 @@ import {FormsModule} from '@angular/forms';
   ],
   styleUrls: ['./item.component.scss']
 })
-export class ItemComponent {
+export class ItemComponent implements OnInit{
   @Input() items: Item[] = [];
   @Input() formData!: Item;
   @Output() itemEvent: EventEmitter<{value:string,action:string}> = new EventEmitter<{value:string,action:string}>();
@@ -25,12 +26,18 @@ export class ItemComponent {
   tempMinValue: number =0;
   tempMidValue: number = 0;
 
-  updateMinValue: number = 0;
-  updateMidValue:number = 0;
+
 
   isRemoving : boolean = false;
   showInfo: boolean = false;
   showEdit: boolean = false;
+
+  ngOnInit() {
+    if(this.formData){
+      this.tempMinValue = this.formData.minValue;
+      this.tempMidValue = this.formData.midValue;
+    }
+  }
 
   emitEvent(value: string, action: string) {
     this.itemEvent.emit({value, action});
@@ -99,22 +106,42 @@ export class ItemComponent {
     }
   }
   onBlurMid(id:string){
-    if(this.tempMidValue > 0) {
+    if(this.tempMidValue > 0 && this.tempMidValue > this.formData.minValue) {
       this.formData.midValue = this.tempMidValue;
-    }
       this.emitNewValuesItem(id, this.formData.midValue, 'onNewMidValue');
+      return;
+    }
 
   }
   onBlurMin(id:string){
-  if(this.tempMinValue > 0) {
-    this.formData.minValue = this.tempMinValue;
+    if(this.tempMinValue > 0 && this.tempMinValue < this.formData.midValue) {
+        this.formData.minValue = this.tempMinValue;
+        this.emitNewValuesItem(id,this.formData.minValue,'onNewMinValue');
+        return;
+    }
+
   }
-    this.emitNewValuesItem(id,this.formData.minValue,'onNewMinValue');
-  }
-  isValuesValid():boolean{
-    return this.formData.midValue > this.formData.minValue && (this.formData.midValue > 0 && this.formData.minValue>0);
+
+  isValuesValid(): boolean {
+
+    if (this.tempMinValue <= 0 || this.tempMidValue <= 0) {
+      return false;
+    }
+
+    if (this.tempMinValue > 0 && this.tempMidValue > 0) {
+      return this.tempMidValue > this.tempMinValue;
+    }
+
+    const hasInvalidTempMin = this.tempMinValue > 0 && this.tempMinValue >= this.formData.midValue;
+    const hasInvalidTempMid = this.tempMidValue > 0 && this.tempMidValue <= this.formData.minValue;
+
+    if (hasInvalidTempMin || hasInvalidTempMid) {
+      return false;
+    }
+
+    return this.formData.minValue < this.formData.midValue;
   }
 
 
-  protected readonly HTMLInputElement = HTMLInputElement;
+  protected readonly input = input;
 }

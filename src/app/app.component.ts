@@ -139,7 +139,7 @@ export class AppComponent implements OnInit {
         break;
       }
       case 'onMinValueDecrease': {
-        if (item && item.minValue > 0) {
+        if (item && item.minValue > 1) {
           item.minValue--;
           this.toggleBackground(event.value);
           await this.cacheService.setItem(event.value, item);
