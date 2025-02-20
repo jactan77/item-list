@@ -1,8 +1,7 @@
 import {Component, EventEmitter, input, Input, OnInit, Output} from '@angular/core';
 import {Item} from './Item';
-import {NgClass, NgIf} from '@angular/common';
+import {NgClass, NgIf, NgStyle} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {reportUnhandledError} from 'rxjs/internal/util/reportUnhandledError';
 
 @Component({
   selector: 'app-item',
@@ -11,6 +10,7 @@ import {reportUnhandledError} from 'rxjs/internal/util/reportUnhandledError';
     NgClass,
     NgIf,
     FormsModule,
+    NgStyle,
 
   ],
   styleUrls: ['./item.component.scss']
@@ -90,7 +90,7 @@ export class ItemComponent implements OnInit{
 
   onNewMidValue(event: Event | null): void {
   if(event && event.target) {
-    const value = (event.target as HTMLInputElement).value;
+    const value:string = (event.target as HTMLInputElement).value;
     if (value) {
       this.tempMidValue = parseInt(value);
     }
@@ -105,7 +105,7 @@ export class ItemComponent implements OnInit{
       }
     }
   }
-  onBlurMid(id:string){
+  onBlurMid(id:string):void{
     if(this.tempMidValue > 0 && this.tempMidValue > this.formData.minValue) {
       this.formData.midValue = this.tempMidValue;
       this.emitNewValuesItem(id, this.formData.midValue, 'onNewMidValue');
@@ -113,7 +113,7 @@ export class ItemComponent implements OnInit{
     }
 
   }
-  onBlurMin(id:string){
+  onBlurMin(id:string): void{
     if(this.tempMinValue > 0 && this.tempMinValue < this.formData.midValue) {
         this.formData.minValue = this.tempMinValue;
         this.emitNewValuesItem(id,this.formData.minValue,'onNewMinValue');

@@ -77,7 +77,7 @@ export class AppComponent implements OnInit {
       const newItem: Item = {
         ...this.itemForm.value,
         id: Math.floor(Math.random() * 1000).toString(),
-        color: "bg-success"
+        color: "border-green"
       };
       if (this.itemForm.get('img')?.value) {
         newItem.img = this.itemForm.get('img')?.value;
@@ -190,9 +190,9 @@ export class AppComponent implements OnInit {
 
     const {amount, midValue, minValue} = item;
     item.color = amount > midValue
-      ? 'bg-success'
+      ? 'border-green'
       : amount > minValue
-        ? 'bg-warning'
-        : 'bg-danger';
+        ? 'border-yellow'
+        : 'border-red';
   }
 }
