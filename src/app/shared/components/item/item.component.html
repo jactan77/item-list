@@ -11,10 +11,18 @@
     </span>
 
     <div class="item-buttons">
-      <button class="item__button item__button--action"
-              (click)="onDecrease(formData.id)">-</button>
-      <button class="item__button item__button--action"
-              (click)="onIncrease(formData.id)">+</button>
+      <div class="amount-container">
+        <button class="amount-container__button" (click)="onDecrease(formData.id)">-</button>
+        <input
+          [(ngModel)]="formData.amount"
+          (input)="newAmount(formData.id)"
+          id="customRange1"
+          type="range"
+          class="amount-container__range"
+        />
+        <button class="amount-container__button" (click)="onIncrease(formData.id)">+</button>
+      </div>
+
 
       <button class="item__button item__button--delete"
               (click)="removeItem(formData.id)"

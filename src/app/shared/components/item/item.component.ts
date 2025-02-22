@@ -1,6 +1,6 @@
 import {Component, EventEmitter, input, Input, OnInit, Output} from '@angular/core';
 import {Item} from './Item';
-import {NgClass, NgIf, NgStyle} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 
 @Component({
@@ -10,7 +10,6 @@ import {FormsModule} from '@angular/forms';
     NgClass,
     NgIf,
     FormsModule,
-    NgStyle,
 
   ],
   styleUrls: ['./item.component.scss']
@@ -66,6 +65,9 @@ export class ItemComponent implements OnInit{
 
   changeValues(): void{
     this.showEdit = !this.showEdit;
+  }
+  newAmount(id : string): void{
+    this.emitNewValuesItem(id,this.formData.amount,'newAmount');
   }
   onDecrease(id:string): void{
     this.emitEvent(id,'onDecrease');
