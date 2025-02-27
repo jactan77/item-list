@@ -12,11 +12,12 @@ export function amountValuesValidator(formGroup: AbstractControl): ValidationErr
     };
   }
 
-
-  if (amount < minValue || minValue > midValue || midValue > amount) {
+if((amount && minValue) && midValue){
+  if (amount <= minValue || minValue >= midValue || midValue >= amount) {
     return {
       invalidRange: true
     };
+  }
   }
 
   return null;

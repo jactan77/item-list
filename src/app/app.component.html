@@ -66,8 +66,8 @@
       </div>
     </div>
 
-    <div *ngIf="itemForm.errors?.['invalidNumbers'] || itemForm.errors?.['invalidRange']" class="alert alert-danger">
-      {{ errorMessage }}
+    <div *ngIf="(itemForm.errors?.['invalidNumbers'] || itemForm.errors?.['invalidRange']) && itemForm.get('midValue')?.touched" class="alert alert-danger">
+            Invalid input. Please enter valid Amount and values.
     </div>
 
     <button type="submit" [disabled]="itemForm.invalid">

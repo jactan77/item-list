@@ -12,6 +12,7 @@
         type="file"
         class="custom-file-input form-control bg-dark text-light border-secondary"
         (change)="onImagePicked($event)"
+        [value]="selectedFile"
         accept="image/*"
       />
       <div class="invalid-feedback text-warning" *ngIf="itemForm.get('img')?.errors?.['invalidMimeType']">

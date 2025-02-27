@@ -2,14 +2,15 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CacheStorageService } from '../../services/cache-storage.service';
 import { Item } from '../item/Item';
-import { NgIf } from '@angular/common';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-image',
   templateUrl: './image.component.html',
   standalone: true,
   imports: [
-    NgIf
+    NgIf,
+
   ],
   styleUrl: './image.component.scss'
 })
@@ -42,7 +43,7 @@ if(event.target.files && event.target.files[0]){
       }
 
       const reader = new FileReader();
-      reader.onload = (e:Event) :void => {
+      reader.onload = () :void => {
         this.URL=reader.result;
         this.itemForm.patchValue({ img: this.URL as string });
         this.itemForm.get('img')?.updateValueAndValidity();
@@ -51,11 +52,15 @@ if(event.target.files && event.target.files[0]){
       reader.readAsDataURL(this.selectedFile);
 
     }
-  }
+  } else
+      this.resetImage();
+
   }
 
   resetImage(): void {
     this.URL = null;
     this.itemForm.get('img')?.reset();
+    this.selectedFile = null;
   }
+
 }
