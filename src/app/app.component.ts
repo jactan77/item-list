@@ -193,7 +193,7 @@ export class AppComponent implements OnInit {
   }
 
   toggleBackground(id: string): void {
-    const item = this.items.find(item => item.id === id);
+    const item:Item | undefined = this.items.find(item => item.id === id);
     if (!item) return;
 
     const {amount, midValue, minValue} = item;

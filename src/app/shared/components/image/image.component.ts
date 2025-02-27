@@ -16,49 +16,46 @@ import { NgIf } from '@angular/common';
 export class ImageComponent implements OnInit {
   @Input() itemForm!: FormGroup;
   @Input() itemId?: string;
-
-  imagePreview: string | null = null;
+  selectedFile: File | null = null;
+  URL: string | ArrayBuffer | null = null;
 
   constructor(private cacheService: CacheStorageService) {}
 
-  async ngOnInit() {
+  async ngOnInit() : Promise<void> {
     if (this.itemId) {
-      const item = await this.cacheService.getItem<Item>(this.itemId);
+      const item : Item | null = await this.cacheService.getItem<Item>(this.itemId);
       if (item && item.img) {
-        this.imagePreview = item.img;
+        this.URL = item.img;
         this.itemForm.patchValue({ img: item.img });
       }
     }
-
-    this.itemForm.statusChanges.subscribe(status => {
-      if (this.itemForm.pristine) {
-        this.imagePreview = null;
-      }
-    });
   }
 
-  onImagePicked(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
+  onImagePicked(event: any): void {
 
-    if (file) {
-      if (!file.type.startsWith('image/')) {
+if(event.target.files && event.target.files[0]){
+  this.selectedFile = event.target.files[0];
+  if (this.selectedFile) {
+      if (!this.selectedFile.type.startsWith('image/')) {
         this.itemForm.get('img')?.setErrors({ invalidMimeType: true });
         return;
       }
 
       const reader = new FileReader();
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        this.imagePreview = base64String;
-        this.itemForm.patchValue({ img: base64String });
+      reader.onload = (e:Event) :void => {
+        this.URL=reader.result;
+        this.itemForm.patchValue({ img: this.URL as string });
         this.itemForm.get('img')?.updateValueAndValidity();
+
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(this.selectedFile);
+
     }
+  }
   }
 
   resetImage(): void {
-    this.imagePreview = null;
+    this.URL = null;
     this.itemForm.get('img')?.reset();
   }
 }
