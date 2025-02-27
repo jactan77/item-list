@@ -45,8 +45,8 @@ export class AppComponent implements OnInit {
     this.itemForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       amount: [null, [Validators.required, Validators.min(1)]],
-      minValue: [null, [Validators.required, Validators.min(0)]],
-      midValue: [null, [Validators.required, Validators.min(0)]],
+      minValue: [null, [Validators.required, Validators.min(1)]],
+      midValue: [null, [Validators.required, Validators.min(1)]],
       id: [''],
       img:[null]
     }, {

@@ -50,6 +50,9 @@
       <div class="invalid-feedback" *ngIf="itemForm.get('minValue')?.errors?.['required'] && itemForm.get('minValue')?.touched">
         Min-Amount is required
       </div>
+      <div class="invalid-feedback" *ngIf="itemForm.get('minValue')?.errors?.['min'] && itemForm.get('minValue')?.touched">
+        Minimum-Amount must be greater than 0
+      </div>
     </div>
 
     <div class="mb-3">
@@ -63,6 +66,9 @@
       />
       <div class="invalid-feedback" *ngIf="itemForm.get('midValue')?.errors?.['required'] && itemForm.get('midValue')?.touched">
         Middle-Amount is required
+      </div>
+      <div class="invalid-feedback" *ngIf="itemForm.get('midValue')?.errors?.['min'] && itemForm.get('midValue')?.touched">
+        Middle-Amount must be greater than 0
       </div>
     </div>
 
