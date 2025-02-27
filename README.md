@@ -1,7 +1,8 @@
 # Item List Application
 
 This Angular application provides a simple interface for managing items with their quantities and threshold values.
-
+# Demo
+![](README/demo.gif)
 ## Features
 
 - Add new items with specified name and amount
