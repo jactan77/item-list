@@ -160,35 +160,11 @@ export class AppComponent implements OnInit {
       }
     }
   }
-  async onNewValuesEvent(event: {id:string,value: number, action: string}):Promise<void>{
-    const item : Item | undefined  = this.items.find(item => item.id === event.id);
-    switch(event.action){
-      case 'newAmount':{
-        if(item){
-          item.amount = event.value;
-          this.toggleBackground(event.id);
-          await this.cacheService.setItem(event.id,item);
-        }
-        break;
-      }
-      case 'onNewMidValue':{
-        if(item && this.itemComponent.isValuesValid()){
-          item.midValue =  event.value;
-          this.toggleBackground(event.id);
-          await this.cacheService.setItem(event.id,item);
-        }
-        break;
-      }
-    }
-    switch(event.action){
-      case 'onNewMinValue':{
-        if(item && this.itemComponent.isValuesValid()){
-          item.minValue =  event.value;
-          this.toggleBackground(event.id);
-          await this.cacheService.setItem(event.id,item);
-        }
-        break;
-      }
+  async onNewValuesEvent(event: {id:string,item:Item}):Promise<void> {
+    const item: Item | undefined = this.items.find(item => item.id === event.id);
+    if(item){
+      await this.cacheService.setItem(event.id,event.item);
+      this.toggleBackground(event.id);
     }
   }
 

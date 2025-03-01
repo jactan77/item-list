@@ -45,3 +45,6 @@ input::placeholder {
   transition: background-color $transition-duration ease,
   color $transition-duration ease;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

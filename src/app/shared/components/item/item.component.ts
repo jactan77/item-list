@@ -2,6 +2,8 @@ import {Component, EventEmitter, input, Input, OnInit, Output} from '@angular/co
 import {Item} from './Item';
 import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {NgxSliderModule, Options} from '@angular-slider/ngx-slider';
+import {min} from 'rxjs';
 
 @Component({
   selector: 'app-item',
@@ -10,6 +12,7 @@ import {FormsModule} from '@angular/forms';
     NgClass,
     NgIf,
     FormsModule,
+    NgxSliderModule
 
   ],
   styleUrls: ['./item.component.scss']
@@ -18,8 +21,15 @@ export class ItemComponent implements OnInit{
   @Input() items: Item[] = [];
   @Input() formData!: Item;
   @Output() itemEvent: EventEmitter<{value:string,action:string}> = new EventEmitter<{value:string,action:string}>();
-  @Output() newValuesItem: EventEmitter<{id:string,value:number, action:string}> = new EventEmitter<{id:string,value:number, action:string}>();
+  @Output() newValuesItem: EventEmitter<{id:string,item:Item}> = new EventEmitter<{id:string,item:Item}>();
 
+  sliderOptions:Options={
+    floor:0,
+    ceil:100,
+    minRange:1,
+    showOuterSelectionBars: true
+
+  }
 
 
   tempMinValue: number =0;
@@ -41,8 +51,8 @@ export class ItemComponent implements OnInit{
   emitEvent(value: string, action: string) {
     this.itemEvent.emit({value, action});
   }
-  emitNewValuesItem(id:string, value: number, action: string){
-    this.newValuesItem.emit({id,value,action});
+  emitNewValuesItem(id:string, item:Item){
+    this.newValuesItem.emit({id,item});
   }
 
   removeItem(id:string): void{
@@ -61,13 +71,11 @@ export class ItemComponent implements OnInit{
     this.showInfo = !this.showInfo;
 
   }
-
-
   changeValues(): void{
     this.showEdit = !this.showEdit;
   }
-  newAmount(id : string): void{
-    this.emitNewValuesItem(id,this.formData.amount,'newAmount');
+  onNewValues(id : string): void{
+    this.emitNewValuesItem(id,this.formData);
   }
   onDecrease(id:string): void{
     this.emitEvent(id,'onDecrease');
@@ -76,74 +84,9 @@ export class ItemComponent implements OnInit{
     this.emitEvent(id,'onIncrease');
   }
 
-  onMidValueDecrease(id:string):void{
-        this.emitEvent(id,'onMidValueDecrease');
-  }
-  onMidIncrease(id:string):void{
-    this.emitEvent(id,'onMidValueIncrease');
 
-  }
-  onMinDecrease(id:string):void{
-    this.emitEvent(id,'onMinValueDecrease');
-  }
-  onMinIncrease(id:string):void{
-    this.emitEvent(id,'onMinValueIncrease');
-  }
-
-  onNewMidValue(event: Event | null): void {
-  if(event && event.target) {
-    const value:string = (event.target as HTMLInputElement).value;
-    if (value) {
-      this.tempMidValue = parseInt(value);
-    }
-  }
-  }
-
-  onNewMinValue(event: Event | null): void {
-    if(event && event.target) {
-      const value = (event.target as HTMLInputElement).value;
-      if (value) {
-        this.tempMinValue = parseInt(value);
-      }
-    }
-  }
-  onBlurMid(id:string):void{
-    if(this.tempMidValue > 0 && this.tempMidValue > this.formData.minValue) {
-      this.formData.midValue = this.tempMidValue;
-      this.emitNewValuesItem(id, this.formData.midValue, 'onNewMidValue');
-      return;
-    }
-
-  }
-  onBlurMin(id:string): void{
-    if(this.tempMinValue > 0 && this.tempMinValue < this.formData.midValue) {
-        this.formData.minValue = this.tempMinValue;
-        this.emitNewValuesItem(id,this.formData.minValue,'onNewMinValue');
-        return;
-    }
-
-  }
-
-  isValuesValid(): boolean {
-
-    if (this.tempMinValue <= 0 || this.tempMidValue <= 0) {
-      return false;
-    }
-
-    if (this.tempMinValue > 0 && this.tempMidValue > 0) {
-      return this.tempMidValue > this.tempMinValue;
-    }
-
-    const hasInvalidTempMin = this.tempMinValue > 0 && this.tempMinValue >= this.formData.midValue;
-    const hasInvalidTempMid = this.tempMidValue > 0 && this.tempMidValue <= this.formData.minValue;
-
-    if (hasInvalidTempMin || hasInvalidTempMid) {
-      return false;
-    }
-
-    return this.formData.minValue < this.formData.midValue;
-  }
 
 
   protected readonly input = input;
+  protected readonly min = min;
 }

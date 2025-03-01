@@ -15,7 +15,7 @@
         <button class="amount-container__button" (click)="onDecrease(formData.id)">-</button>
         <input
           [(ngModel)]="formData.amount"
-          (input)="newAmount(formData.id)"
+          (input)="onNewValues(formData.id)"
           id="customRange1"
           type="range"
           class="amount-container__range"
@@ -73,21 +73,11 @@
   </div>
 
   <div class="item__edit" [class.item__edit--visible]="showEdit">
-    <div class="item__edit-values">
-      <div class="item__edit-values--min">
-        <input type="number" class="value-content" [value]="formData.minValue" (input)="onNewMinValue($event)" (blur)="onBlurMin(formData.id)" [class.error]="!isValuesValid()">
-        <div class="button-group">
-          <button class="item__edit-button" (click)="onMinIncrease(formData.id)">+</button>
-          <button class="item__edit-button" (click)="onMinDecrease(formData.id)">-</button>
-        </div>
-      </div>
-      <div class="item__edit-values--mid">
-        <input type="number" class="value-content" [value]="formData.midValue"  (input)="onNewMidValue($event)" (blur)="onBlurMid(formData.id)" [class.error]="!isValuesValid()" >
-        <div class="button-group">
-          <button class="item__edit-button" (click)="onMidIncrease(formData.id)" >+</button>
-          <button class="item__edit-button" (click)="onMidValueDecrease(formData.id)">-</button>
-        </div>
-      </div>
+    <div class="item__edit__range-sliders">
+      <div class="custom-slider">
+      <ngx-slider [(value)]="formData.minValue" [(highValue)]="formData.midValue" [options]="sliderOptions" (userChange)="onNewValues(formData.id)" ></ngx-slider>
+</div>
+
     </div>
   </div>
 </li>
