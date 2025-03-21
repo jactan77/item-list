@@ -33,13 +33,5 @@ export class CacheStorageService {
     await cache.delete(key);
   }
 
-  async clear(): Promise<void> {
-    await caches.delete(this.CACHE_NAME);
-  }
 
-  async getAllKeys(): Promise<string[]> {
-    const cache = await this.getCache();
-    const requests = await cache.keys();
-    return requests.map(request => request.url);
-  }
 }
