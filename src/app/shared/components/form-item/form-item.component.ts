@@ -1,15 +1,17 @@
-import {Component, inject, OnInit, ViewChild} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Item} from '../item/Item';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ItemComponent} from '../item/item.component';
 import {ImageComponent} from '../image/image.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {amountValuesValidator} from '../../validators/amount-values.validator';
 import {CacheStorageService} from '../../services/cache-storage.service';
-import { trigger, style, animate, transition } from '@angular/animations';
+import {animate, style, transition, trigger} from '@angular/animations';
 import {Router, RouterModule} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
-import{StorageService} from '../../services/storage.service';
+import {StorageService} from '../../services/storage.service';
+import {AmountOperations} from '../../services/AmountOperations';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-form-item',
@@ -33,7 +35,7 @@ import{StorageService} from '../../services/storage.service';
     ])
   ]
 })
-export class FormItemComponent {
+export class FormItemComponent implements OnInit, OnDestroy {
   @ViewChild(ImageComponent) imageComponent!: ImageComponent;
   @ViewChild(ItemComponent) itemComponent!: ItemComponent;
   authService : AuthService  = inject(AuthService)
@@ -42,11 +44,10 @@ export class FormItemComponent {
   formData!: Item;
   errorMessage: string = '';
   items: Item[] = [];
-
+  private subscription: Subscription | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private cacheService: CacheStorageService,
     private storageService:StorageService,
     private route: Router
   ) {
@@ -62,9 +63,7 @@ export class FormItemComponent {
     });
   }
 
-
   async ngOnInit() {
-    this.items = await this.loadItems();
     this.authService.user$.subscribe((user)=>{
       if(user){
         this.authService.currentUserSig.set({
@@ -73,23 +72,56 @@ export class FormItemComponent {
             id:user.uid
           }
         );
-      }else{
+
+        const userId = this.authService.currentUserSig()?.id;
+        this.storageService.setupItemsListener(userId);
+
+        this.loadInitialItems();
+
+        this.subscription = this.storageService.itemUpdates.subscribe(update => {
+          if (!update) {
+            this.items = [];
+            return;
+          }
+
+          if (update.type === 'full') {
+            this.items = Object.entries(update.items).map(([id, obj]) => ({
+              id,
+              ...obj
+            }));
+          } else if (update.type === 'added') {
+            const newItems = Object.entries(update.items).map(([id, obj]) => ({
+              id,
+              ...obj
+            }));
+
+            this.items = [...this.items, ...newItems];
+          }
+        });
+
+      } else {
         this.route.navigateByUrl('/login');
       }
-    })
-
+    });
   }
 
-  async loadItems(): Promise<Item[]> {
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  async loadInitialItems(): Promise<void> {
     const userData = await this.storageService.loadItems(this.authService.currentUserSig()?.id);
-    if (!userData) return [];
-    return Object.entries(userData).map(([id, obj]) => {
-      const parsedItem = JSON.parse(obj.item);
-      return {
-        id,
-        ...parsedItem
-      };
-    });
+    if (!userData) {
+      this.items = [];
+      return;
+    }
+
+    this.items = Object.entries(userData).map(([id, obj]) => ({
+      id,
+      ...obj
+    }));
   }
 
   async onSubmit() {
@@ -99,16 +131,15 @@ export class FormItemComponent {
         id: Math.floor(Math.random() * 1000).toString(),
         color: "border-green"
       };
+
       if (this.itemForm.get('img')?.value) {
         newItem.img = this.itemForm.get('img')?.value;
       }
 
-      await this.cacheService.setItem(newItem.id, newItem);
       if(this.authService.currentUserSig()?.id){
         await this.storageService.addItem(this.authService.currentUserSig()?.id,newItem.id,newItem);
-
       }
-      this.items.push(newItem);
+
       this.formData = newItem;
       this.itemForm.reset();
       this.imageComponent.resetImage();
@@ -121,50 +152,31 @@ export class FormItemComponent {
     }
   }
 
-  async onEventItem(event: {value: string, action: string}): Promise<void> {
-    const item: Item | undefined = this.items.find(item => item.id === event.value);
-
-    switch (event.action) {
-      case 'removeItem': {
-        this.items = this.items.filter(item => item.id !== event.value);
-        await this.cacheService.removeItem(event.value);
-        await this.storageService.removeItem(this.authService.currentUserSig()?.id,event.value);
-        break;
-      }
-      case 'onDecrease': {
-        if (item && item.amount > 0) {
-          item.amount--;
-          this.toggleBackground(event.value);
-          await this.cacheService.setItem(event.value, item);
-          await this.storageService.addItem(this.authService.currentUserSig()?.id,event.value,item);
-        }
-        break;
-      }
-      case 'onIncrease': {
-        if (item) {
-          item.amount++;
-          this.toggleBackground(event.value);
-          await this.cacheService.setItem(event.value, item);
-          await this.storageService.addItem(this.authService.currentUserSig()?.id,event.value,item);
-        }
-        break;
-      }
-      default: {
-        console.error("Invalid request");
-      }
-    }
+  async onEventRemove(event: {value: string}): Promise<void> {
+    this.items = this.items.filter(item => item.id !== event.value);
+    await this.storageService.removeItem(this.authService.currentUserSig()?.id,event.value);
   }
-  async onNewValuesEvent(event: {id:string,item:Item}):Promise<void> {
+
+  async onNewValuesEvent(event: { id: string; item: Item; action: AmountOperations }):Promise<void> {
     const item: Item | undefined = this.items.find(item => item.id === event.id);
+
     if(item){
-      await this.cacheService.setItem(event.id,event.item);
-      await this.storageService.addItem(this.authService.currentUserSig()?.id,event.id,item);
-      this.toggleBackground(event.id);
+      switch (event.action){
+        case AmountOperations.SET_CURRENT_AMOUNT: {
+          await this.storageService.changeAmount(this.authService.currentUserSig()?.id, event.id, item.amount,item.color);
+          break;
+        }
+        case AmountOperations.SET_MID_MIN:{
+          await this.storageService.changeMidMin(this.authService.currentUserSig()?.id, event.id,item.minValue,item.midValue,item.color);
+        }
+      }
     }
   }
 
-  toggleBackground(id: string): void {
-    const item:Item | undefined = this.items.find(item => item.id === id);
+  async onItemValuesListener(){}
+
+  toggleBackground(event: { id: string }): void {
+    const item:Item | undefined = this.items.find(item => item.id === event.id);
     if (!item) return;
 
     const {amount, midValue, minValue} = item;

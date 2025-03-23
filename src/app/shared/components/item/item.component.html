@@ -12,20 +12,23 @@
 
     <div class="item-buttons">
       <div class="amount-container">
-        <button class="amount-container__button" (click)="onDecrease(formData.id)">-</button>
+        <button class="amount-container__button" (click)="onNewValues(formData.id,AmountOperations.DECREASE_AMOUNT)">-</button>
+
         <input
           [(ngModel)]="formData.amount"
-          (input)="onNewValues(formData.id)"
+          (input)="onNewValues(formData.id,AmountOperations.SET_CURRENT_AMOUNT)"
           id="customRange1"
           type="range"
           class="amount-container__range"
+
         />
-        <button class="amount-container__button" (click)="onIncrease(formData.id)">+</button>
+
+        <button class="amount-container__button" (click)="onNewValues(formData.id,AmountOperations.INCREASE_AMOUNT)">+</button>
       </div>
 
 
       <button class="item__button item__button--delete"
-              (click)="removeItem(formData.id)"
+              (click)="remove(formData.id)"
               aria-label="Delete item">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path d="M4 6h16M16 6v-1a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v1"
@@ -75,7 +78,7 @@
   <div class="item__edit" [class.item__edit--visible]="showEdit">
     <div class="item__edit__range-sliders">
       <div class="custom-slider">
-      <ngx-slider [(value)]="formData.minValue" [(highValue)]="formData.midValue" [options]="sliderOptions" (userChange)="onNewValues(formData.id)" ></ngx-slider>
+      <ngx-slider [(value)]="formData.minValue" [(highValue)]="formData.midValue" [options]="sliderOptions" (userChange)="onNewValues(formData.id,AmountOperations.SET_MID_MIN)" ></ngx-slider>
 </div>
 
     </div>

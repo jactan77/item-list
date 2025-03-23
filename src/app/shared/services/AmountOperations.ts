@@ -1,0 +1,6 @@
+export enum AmountOperations {
+  SET_CURRENT_AMOUNT,
+  INCREASE_AMOUNT,
+  DECREASE_AMOUNT,
+  SET_MID_MIN
+}

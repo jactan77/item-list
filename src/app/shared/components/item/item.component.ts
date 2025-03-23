@@ -3,7 +3,8 @@ import {Item} from './Item';
 import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NgxSliderModule, Options} from '@angular-slider/ngx-slider';
-import {min} from 'rxjs';
+import {StorageService} from '../../services/storage.service';
+import {AmountOperations} from '../../services/AmountOperations';
 
 @Component({
   selector: 'app-item',
@@ -20,14 +21,16 @@ import {min} from 'rxjs';
 export class ItemComponent implements OnInit{
   @Input() items: Item[] = [];
   @Input() formData!: Item;
-  @Output() itemEvent: EventEmitter<{value:string,action:string}> = new EventEmitter<{value:string,action:string}>();
-  @Output() newValuesItem: EventEmitter<{id:string,item:Item}> = new EventEmitter<{id:string,item:Item}>();
-
+  @Input() userId:string | undefined;
+  @Output() removeItem: EventEmitter<{value:string}> = new EventEmitter<{value:string}>();
+  @Output() newValuesItem: EventEmitter<{id:string,item:Item,action:AmountOperations}> = new EventEmitter<{id:string,item:Item,action:AmountOperations}>();
+  @Output() newColor: EventEmitter<{id:string}> = new EventEmitter<{id:string}>
   sliderOptions:Options={
+
     floor:0,
     ceil:100,
     minRange:1,
-    showOuterSelectionBars: true
+    showOuterSelectionBars: true,
 
   }
 
@@ -41,24 +44,76 @@ export class ItemComponent implements OnInit{
   showInfo: boolean = false;
   showEdit: boolean = false;
 
+  constructor(private serviceStorage:StorageService) {}
+
   ngOnInit() {
     if(this.formData){
       this.tempMinValue = this.formData.minValue;
       this.tempMidValue = this.formData.midValue;
+      this.updateSliderOptions();
+    }
+
+
+       this.serviceStorage.amountListener(this.userId, this.formData.id, (data) => {
+         if (data) {
+          this.formData.amount = parseInt(JSON.stringify(data));
+
+          this.emitNewBackGroundColor(this.formData.id);
+        }
+         if(data == null){
+           this.remove(this.formData.id);
+        }
+      });
+
+    this.serviceStorage.midValueListener(this.userId, this.formData.id, (data) => {
+      if (data) {
+        this.formData.midValue = parseInt(JSON.stringify(data));
+        this.updateSliderOptions()
+        this.emitNewBackGroundColor(this.formData.id);
+      }
+      if(data == null){
+        this.remove(this.formData.id);
+      }
+    });
+    this.serviceStorage.minValueListener(this.userId, this.formData.id, (data) => {
+      if (data) {
+        this.formData.minValue = parseInt(JSON.stringify(data));
+        this.updateSliderOptions()
+        this.emitNewBackGroundColor(this.formData.id);
+      }
+      if(data == null){
+        this.remove(this.formData.id);
+      }
+    });
+
+
+
+
+  }
+  updateSliderOptions() {
+    if(this.sliderOptions.floor && this.sliderOptions.ceil) {
+      this.sliderOptions = {
+        ...this.sliderOptions,
+        floor: Math.min(this.formData.minValue, this.sliderOptions.floor),
+        ceil: Math.max(this.formData.midValue, this.sliderOptions.ceil),
+      };
     }
   }
 
-  emitEvent(value: string, action: string) {
-    this.itemEvent.emit({value, action});
+  emitRemoving(value: string) {
+    this.removeItem.emit({value});
   }
-  emitNewValuesItem(id:string, item:Item){
-    this.newValuesItem.emit({id,item});
+  emitNewValuesItem(id:string, item:Item,action:AmountOperations){
+    this.newValuesItem.emit({id,item,action});
+  }
+  emitNewBackGroundColor(id:string){
+    this.newColor.emit({id});
   }
 
-  removeItem(id:string): void{
+  remove(id:string): void{
     this.isRemoving = true;
     setTimeout(()=>{
-    this.emitEvent(id,'removeItem');
+    this.emitRemoving(id);
 
     },300)
   }
@@ -74,19 +129,28 @@ export class ItemComponent implements OnInit{
   changeValues(): void{
     this.showEdit = !this.showEdit;
   }
-  onNewValues(id : string): void{
-    this.emitNewValuesItem(id,this.formData);
+  onNewValues(id : string,action:AmountOperations): void{
+    if(AmountOperations.INCREASE_AMOUNT == action){
+      this.formData.amount++;
+      this.emitNewBackGroundColor(id);
+      this.emitNewValuesItem(id,this.formData,AmountOperations.SET_CURRENT_AMOUNT);
+      return;
+    }
+    if(AmountOperations.DECREASE_AMOUNT == action){
+      this.formData.amount--;
+      this.emitNewBackGroundColor(id);
+      this.emitNewValuesItem(id,this.formData,AmountOperations.SET_CURRENT_AMOUNT);
+      return;
+    }
+
+      this.emitNewValuesItem(id,this.formData,action);
+      this.emitNewBackGroundColor(id);
   }
-  onDecrease(id:string): void{
-    this.emitEvent(id,'onDecrease');
-  }
-  onIncrease(id:string): void{
-    this.emitEvent(id,'onIncrease');
-  }
+
 
 
 
 
   protected readonly input = input;
-  protected readonly min = min;
+  protected readonly AmountOperations = AmountOperations;
 }

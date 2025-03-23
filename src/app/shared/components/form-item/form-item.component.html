@@ -88,8 +88,10 @@
     *ngFor="let item of items"
     [@itemAnimation]
     [formData]="item"
+    [userId]="authService.currentUserSig()?.id"
     [items]="items"
-    (itemEvent)="onEventItem($event)"
+    (removeItem)="onEventRemove($event)"
     (newValuesItem)="onNewValuesEvent($event)"
+    (newColor)="toggleBackground($event)"
   ></app-item>
 </div>
