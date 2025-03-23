@@ -11,6 +11,8 @@ This Angular application provides a simple interface for managing items with the
 - Remove items from the list
 - View detailed information about each item
 - Real-time validation of input values
+- Real-time database synchronization with Firebase
+- Optimized listeners that prevent full refresh when adding new items
 
 ## Getting Started
 
@@ -18,6 +20,7 @@ This Angular application provides a simple interface for managing items with the
 
 - Node.js and npm installed
 - Angular CLI version 19.1.6
+- Firebase account and project setup
 
 ### Installation
 
@@ -26,6 +29,10 @@ This Angular application provides a simple interface for managing items with the
 ```bash
 npm install
 ```
+3. Configure Firebase:
+  - Create a Firebase project in the Firebase console
+  - Add your Firebase configuration to the environment files
+  - Enable the Realtime Database in your Firebase project
 
 ### Running the Application
 
@@ -44,10 +51,14 @@ ng generate component component-name
 
 For more information on Angular CLI commands, see the [Angular CLI Overview](https://angular.dev/tools/cli).
 
+
+
 ## Built With
 
 - Angular 19.1.6
 - Bootstrap for styling
+- Firebase Realtime Database
+- RxJS for reactive programming
 
 ## Testing
 
