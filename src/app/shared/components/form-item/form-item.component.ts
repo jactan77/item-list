@@ -5,13 +5,13 @@ import {ItemComponent} from '../item/item.component';
 import {ImageComponent} from '../image/image.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {amountValuesValidator} from '../../validators/amount-values.validator';
-import {CacheStorageService} from '../../services/cache-storage.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Router, RouterModule} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
 import {AmountOperations} from '../../services/AmountOperations';
 import {Subscription} from 'rxjs';
+
 
 @Component({
   selector: 'app-form-item',
@@ -38,6 +38,7 @@ import {Subscription} from 'rxjs';
 export class FormItemComponent implements OnInit, OnDestroy {
   @ViewChild(ImageComponent) imageComponent!: ImageComponent;
   @ViewChild(ItemComponent) itemComponent!: ItemComponent;
+
   authService : AuthService  = inject(AuthService)
 
   itemForm: FormGroup;
@@ -78,11 +79,26 @@ export class FormItemComponent implements OnInit, OnDestroy {
 
         this.loadInitialItems();
 
-        this.subscription = this.storageService.itemUpdates.subscribe(update => {
+        this.subscription = this.storageService.itemUpdates.subscribe(async update => {
           if (!update) {
             this.items = [];
             return;
           }
+          if (Object.keys(update.items).length === 0 && this.items.length != 0) {
+            const animation = async ():Promise<void> => {
+              return new Promise((resolve)=>{
+                this.itemComponent.isRemoving = true;
+                setTimeout(()=>{
+                  resolve();
+                }, 350)
+              })
+            }
+            await animation().then(()=>{
+                this.items = [];
+            });
+            return;
+          }
+
 
           if (update.type === 'full') {
             this.items = Object.entries(update.items).map(([id, obj]) => ({
@@ -173,7 +189,6 @@ export class FormItemComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onItemValuesListener(){}
 
   toggleBackground(event: { id: string }): void {
     const item:Item | undefined = this.items.find(item => item.id === event.id);
