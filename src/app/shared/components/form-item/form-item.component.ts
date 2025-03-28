@@ -11,6 +11,7 @@ import {AuthService} from '../../services/auth.service';
 import {StorageService} from '../../services/storage.service';
 import {AmountOperations} from '../../services/AmountOperations';
 import {Subscription} from 'rxjs';
+import {NavbarComponent} from '../navbar/navbar.component';
 
 
 @Component({
@@ -24,7 +25,8 @@ import {Subscription} from 'rxjs';
     ReactiveFormsModule,
     NgIf,
     NgForOf,
-    RouterModule
+    RouterModule,
+    NavbarComponent
   ],
   animations: [
     trigger('itemAnimation', [
@@ -77,7 +79,6 @@ export class FormItemComponent implements OnInit, OnDestroy {
         const userId = this.authService.currentUserSig()?.id;
         this.storageService.setupItemsListener(userId);
 
-        this.loadInitialItems();
 
         this.subscription = this.storageService.itemUpdates.subscribe(async update => {
           if (!update) {
@@ -125,19 +126,6 @@ export class FormItemComponent implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-  }
-
-  async loadInitialItems(): Promise<void> {
-    const userData = await this.storageService.loadItems(this.authService.currentUserSig()?.id);
-    if (!userData) {
-      this.items = [];
-      return;
-    }
-
-    this.items = Object.entries(userData).map(([id, obj]) => ({
-      id,
-      ...obj
-    }));
   }
 
   async onSubmit() {

@@ -1,6 +1,6 @@
 import {Item} from '../components/item/Item';
 import {BehaviorSubject, from, Observable} from 'rxjs';
-import {child, Database, get, getDatabase, onValue, ref, remove, set, update} from '@angular/fire/database';
+import {child, Database, getDatabase, onValue, ref, remove, set, update} from '@angular/fire/database';
 import {Injectable} from '@angular/core';
 
 interface ItemUpdate {
@@ -114,23 +114,6 @@ export class StorageService{
     })();
     return from(promise);
   }
-
-  async loadItems(userId: string | undefined) : Promise<Object|null> {
-    const dbRef = ref(this.db);
-    try{
-      const snapshot = await get(child(dbRef, `users/${userId}/items`));
-      if(snapshot.exists()){
-        return snapshot.toJSON();
-      } else{
-        return null;
-      }
-    }
-    catch (e) {
-      console.error(e);
-      return null;
-    }
-  }
-
   itemPropertyListener(
     userId: string | undefined,
     itemId: string,

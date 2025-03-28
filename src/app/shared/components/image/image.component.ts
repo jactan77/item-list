@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { CacheStorageService } from '../../services/cache-storage.service';
 import { Item } from '../item/Item';
 import {NgIf} from '@angular/common';
+import {StorageService} from '../../services/storage.service';
 
 @Component({
   selector: 'app-image',
@@ -14,23 +15,13 @@ import {NgIf} from '@angular/common';
   ],
   styleUrl: './image.component.scss'
 })
-export class ImageComponent implements OnInit {
+export class ImageComponent {
   @Input() itemForm!: FormGroup;
   @Input() itemId?: string;
   selectedFile: File | null = null;
   URL: string | ArrayBuffer | null = null;
 
-  constructor(private cacheService: CacheStorageService) {}
 
-  async ngOnInit() : Promise<void> {
-    if (this.itemId) {
-      const item : Item | null = await this.cacheService.getItem<Item>(this.itemId);
-      if (item && item.img) {
-        this.URL = item.img;
-        this.itemForm.patchValue({ img: item.img });
-      }
-    }
-  }
 
   onImagePicked(event: any): void {
 

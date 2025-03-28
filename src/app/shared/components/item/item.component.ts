@@ -61,8 +61,8 @@ export class ItemComponent implements OnInit{
           this.emitNewBackGroundColor(this.formData.id);
         }
          if(data == null){
-           this.remove(this.formData.id);
-        }
+           this.isRemoving = true;
+         }
       });
 
     this.serviceStorage.midValueListener(this.userId, this.formData.id, (data) => {
@@ -72,7 +72,7 @@ export class ItemComponent implements OnInit{
         this.emitNewBackGroundColor(this.formData.id);
       }
       if(data == null){
-        this.remove(this.formData.id);
+        this.isRemoving = true;
       }
     });
     this.serviceStorage.minValueListener(this.userId, this.formData.id, (data) => {
@@ -82,7 +82,7 @@ export class ItemComponent implements OnInit{
         this.emitNewBackGroundColor(this.formData.id);
       }
       if(data == null){
-        this.remove(this.formData.id);
+        this.isRemoving = true;
       }
     });
 

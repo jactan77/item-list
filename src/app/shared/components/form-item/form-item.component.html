@@ -1,11 +1,11 @@
+<app-navbar></app-navbar>
 <div id="app" class="container mt-4 dark-theme">
   <h1 class="text-center">Item List</h1>
   <h2 class="text-center">Hello {{authService.currentUserSig()?.username}}</h2>
-  <button (click)="authService.logout()">Log Out</button>
 
 
   <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
-    <app-image [itemForm]="itemForm"></app-image>
+    <app-image [itemForm]="itemForm" ></app-image>
 
     <div class="mb-3">
       <input
