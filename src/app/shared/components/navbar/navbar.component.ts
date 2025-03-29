@@ -12,5 +12,9 @@ import {AuthService} from '../../services/auth.service';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
-    authService = inject(AuthService);
+    authService:AuthService = inject(AuthService);
+    isSideBarVisible:boolean = false;
+    toggleSideBar(){
+      this.isSideBarVisible = !this.isSideBarVisible;
+    }
 }

@@ -1,10 +1,17 @@
 <header>
     <img ngSrc="assets/images/logo.png" alt="Logo" height="50" width="150">
   <nav>
-    <ul class="nav__links">
-       <li><a href="#">Home</a></li>
-       <li><a href="#">Account</a></li>
-       <li><a (click)="authService.logout()" >Log Out</a></li>
+    <ul class="sidebar__links" [class.sidebar__links__visible]="isSideBarVisible" >
+      <li><a><img (click)="toggleSideBar()"  ngSrc="assets/icons/delete.svg" height="26" width="26" alt="icon"></a></li>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Account</a></li>
+      <li><a (click)="authService.logout()" >Log Out</a></li>
+    </ul>
+    <ul  class="nav__links">
+       <li class="hideOnMobile"><a href="#">Home</a></li>
+       <li class="hideOnMobile"><a href="#">Account</a></li>
+       <li class="hideOnMobile"><a (click)="authService.logout()" >Log Out</a></li>
+      <li><a><img (click)="toggleSideBar()"  ngSrc="assets/icons/sidebar.svg"   height="26" width="26" alt="icon"></a></li>
      </ul>
   </nav>
 </header>
